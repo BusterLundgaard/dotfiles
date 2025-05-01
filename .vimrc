@@ -4,15 +4,14 @@ Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-commentary'
 Plug 'frazrepo/vim-rainbow'
 Plug 'simnalamburt/vim-mundo'
-" Example plugin
-" Plug 'tpope/vim-sensible'
-
+Plug 'justinmk/vim-dirvish'
+Plug 'roginfarrer/vim-dirvish-dovish', {'branch': 'main'}
 call plug#end()
 
 nnoremap `` `.
 nnoremap <C-e> 10<C-e>
 nnoremap <C-y> 10<C-y>
-nnoremap <C-p> :Files<CR>
+nnoremap <C-p> :FZFSwitch<CR>
 nnoremap <C-g> :Rg<CR>
 nnoremap K :m .-2<CR>==
 nnoremap J :m .+1<CR>==
@@ -20,11 +19,88 @@ vnoremap K :m '<-2<CR>gv=gv
 vnoremap J :m '>+1<CR>gv=gv
 nnoremap <silent> <cr> :noh<cr>
 
+nnoremap <A-h> <C-w>h
+nnoremap <A-j> <C-w>j
+nnoremap <A-k> <C-w>k
+nnoremap <A-l> <C-w>l
+nnoremap <A-d> :vsplit<CR>
+nnoremap <A-f> :split<CR>
+nnoremap <A-t> :tabnew<CR>
+nnoremap <A-e> :tabprevious<CR>
+nnoremap <A-r> :tabnext<CR>
+nnoremap <A-g> :vertical resize -10<CR>
+nnoremap <A-s> :vertical resize +10<CR>
+
+" Toggle number + relativenumber with Alt+n
+nnoremap <silent> <A-n> :call ToggleLineNumbers()<CR>
+
+function! ToggleLineNumbers()
+  if &number
+    set nonumber norelativenumber
+  else
+    set number relativenumber
+  endif
+endfunction
+
+
+
+" DIRVISH
+" ======================================================
+nmap <silent><buffer> e <Plug>(dovish_delete)
+" =======================================================
 let g:rainbow_active = 1
 
+
+" FZF and RIPGREP
+" ==========================================================================
 let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow --glob "!.git/*"'
 set grepprg=rg\ --vimgrep\ --smart-case\ --follow
 command! -nargs=* Rgi call fzf#vim#grep("rg -i --vimgrep --hidden --glob '!.git/*' ".shellescape(<q-args>), 1, fzf#vim#with_preview(), 0)
+
+function! s:open_file_and_close_current(file)
+  " Save current buffer if modified
+  if &modified
+    write
+  endif
+
+  " Get current buffer number
+  let l:curbuf = bufnr('%')
+
+  " Check if buffer is visible in more than one window
+  if len(win_findbuf(l:curbuf)) <= 1	
+    exec 'bd'
+  endif
+
+  " Open selected file
+  exec 'edit ' . fnameescape(a:file)
+endfunction
+
+command! -nargs=0 FZFSwitch call fzf#run(fzf#wrap({
+  \ 'source': 'fd --type f',  
+  \ 'sink': function('<sid>open_file_and_close_current')
+  \ }))
+
+function! SmartBufferClean()
+  " Save current buffer number
+  let l:curbuf = bufnr('%')
+
+  " Delete all buffers
+  silent! execute '%bd'
+
+  " Reopen the saved buffer if it still exists
+  if buflisted(l:curbuf)
+    execute 'buffer' l:curbuf
+  else
+    " Fallback: try to reopen alternate file
+    if expand('#') != ''
+      execute 'edit #'
+    endif
+  endif
+endfunction
+
+" Map it to <Del><Del>
+nnoremap <silent> <Del><Del> :call SmartBufferClean()<CR>
+" ==========================================================================
 
 set number
 set nocompatible

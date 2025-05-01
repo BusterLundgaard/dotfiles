@@ -2,7 +2,7 @@
 q w e r t y u i o p
 a s d f g h j k l ; ' 
 z x c v F17 b n m ret
-spc lsft tab lmet
+spc lsft tab lmet /
 )
 
 (defchords programming 38
@@ -18,9 +18,9 @@ spc lsft tab lmet
 ( p ) (tap-dance-eager 1000 ((macro (unicode æ)) (macro bspc (unicode ø)) (macro bspc (unicode å))))
 ( a ) a 
 ( s ) s  
-( d ) (tap-dance-eager 100 ((macro d) (macro bspc S--)))
-( f ) (tap-dance-eager 100 ((macro f) (macro bspc -)))
-( g ) (tap-dance-eager 100 ((macro g) (macro bspc =)))  
+( d ) d
+( f ) f 
+( g ) g 
 ( h ) h  
 ( j ) j  
 ( k ) k  
@@ -34,7 +34,7 @@ spc lsft tab lmet
 ( b ) b
 ( n ) n
 
-( spc) (tap-dance-eager 200 ((macro spc) (macro bspc tab)))  
+( spc) (tap-dance-eager 200 ((macro spc) (macro bspc S--)))  
 ( ret ) (tap-hold 50 95 ret (layer-while-held navigation))
 ( m ) m
 ( s e ) S-4
@@ -42,15 +42,12 @@ spc lsft tab lmet
 ( s t ) S-6
 ( a e ) S-2
 ( a r ) S-3
-( l b ) ,
-( h l ) .
-( F17 b ) ;
-( g h ) S-; ;; :
-( t y ) =
 ( f g ) S-9
 ( h j ) S-0 
-( b n ) ,
-( n m ) .
+( j l ) S-;
+( w r ) S-, ;;<
+( u o ) S-. ;;>
+( s f ) =
 ( d f ) S-[ ;;{ 
 ( j k ) S-] ;;}
 ( d g ) [
@@ -59,20 +56,16 @@ spc lsft tab lmet
 ( e r ) S-=
 ( r t ) - 
 ( y u ) S-8 ;;*
-( u i ) / 
 ( e t ) S-\ ;;|
 ( y i ) S-7 ;;&
-( e r t ) S-, ;;<
-( y u i ) S-. ;;>
 ( y o ) (macro - S-.) ;;->
 ( s g ) S-' ;; "
-( h k l ) '
+( h l ) '
 ( u h ) /
 ( r g ) \
 ( g F17 ) S-1 ;; !
 ( h b ) S-/ 
 ( q s ) (macro esc S-; w q ret)
-( r u ) esc
 )
 
 (deflayer normal
@@ -110,6 +103,7 @@ spc lsft tab lmet
 (one-shot-press 2000 lsft)
 tab
 (tap-hold 100 100 esc lmet)
+;
 )
 
 (deflayer navigation
@@ -143,6 +137,7 @@ C-e
 C-y
 _  ;;m
 (tap-hold 200 200 ret (layer-while-held navigation))
+_
 _
 _
 _
@@ -181,6 +176,7 @@ _  ;;n
 _  ;;m
 (tap-hold 200 200 ret (layer-while-held navigation))
 spc
+_
 _
 _
 _
