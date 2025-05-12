@@ -55,6 +55,7 @@ m
 ;; special and modifier keys
 ret
 F13
+lmet
 )
 
 
@@ -70,7 +71,7 @@ y   ;; y
 u   ;; u
 i   ;; i
 o   ;; o
-p   ;; p
+(tap-dance-eager 1000 ((macro (unicode æ)) (macro bspc (unicode ø)) (macro bspc (unicode å))))   ;; p
 a   ;; a
 s   ;; s
 d   ;; d
@@ -116,6 +117,7 @@ S-- ;; ,
 ;; special and modifier keys
 (tap-hold 50 95 ret (layer-while-held navigation)) ;; ret 
 S-; ;; F13
+(tap-hold 50 95 esc lmet)
 )
 
 
@@ -124,7 +126,7 @@ S-; ;; F13
   ;; normal letters
 (macro esc S-; q ret) ;; q
 (macro esc S-; w ret) ;; w
-_ ;; e
+S-3 ;; e
 _ ;; r
 \ ;; t
 / ;; y
@@ -177,6 +179,7 @@ _ ;; /
   ;; special and modifier keys
 _ ;; ret
 _ ;; F13
+_
 )
 
 
@@ -238,4 +241,5 @@ _ ;; /
   ;; special and modifier keys
 _ ;; ret
 _ ;; F13
+_
 )
