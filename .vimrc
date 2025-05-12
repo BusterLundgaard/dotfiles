@@ -11,7 +11,7 @@ call plug#end()
 nnoremap `` `.
 nnoremap <C-e> 10<C-e>
 nnoremap <C-y> 10<C-y>
-nnoremap <C-p> :FZFSwitch<CR>
+nnoremap <C-p> :Files<CR>
 nnoremap <C-g> :Rg<CR>
 nnoremap K :m .-2<CR>==
 nnoremap J :m .+1<CR>==
@@ -74,11 +74,6 @@ function! s:open_file_and_close_current(file)
   " Open selected file
   exec 'edit ' . fnameescape(a:file)
 endfunction
-
-command! -nargs=0 FZFSwitch call fzf#run(fzf#wrap({
-  \ 'source': 'fd --type f',  
-  \ 'sink': function('<sid>open_file_and_close_current')
-  \ }))
 
 function! SmartBufferClean()
   " Save current buffer number

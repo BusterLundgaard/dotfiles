@@ -1,0 +1,187 @@
+(defsrc
+q w e r t y u i o p
+a s d f g h j k l ; ' 
+z x c v F17 b n m ret
+spc lsft tab lmet /
+)
+
+(defchords programming 38
+(q ) (tap-dance-eager 200 ((macro q) (macro bspc esc S-; q ret)))
+( w ) (tap-dance-eager 200 ((macro w) (macro bspc esc S-; w ret))) 
+( e ) e 
+( r ) r 
+( t ) t  
+( y ) y  
+( u ) u  
+( i ) i  
+( o ) o  
+( p ) (tap-dance-eager 1000 ((macro (unicode æ)) (macro bspc (unicode ø)) (macro bspc (unicode å))))
+( a ) a 
+( s ) s  
+( d ) d
+( f ) f 
+( g ) g 
+( h ) h  
+( j ) j  
+( k ) k  
+( l ) l   
+( ; ) p 
+( z ) z  
+( x ) x  
+( c ) c  
+( v ) v  
+( F17 ) b
+( b ) b
+( n ) n
+
+( spc) (tap-dance-eager 200 ((macro spc) (macro bspc S--)))  
+( ret ) (tap-hold 50 95 ret (layer-while-held navigation))
+( m ) m
+( s e ) S-4
+( s r ) S-5
+( s t ) S-6
+( a e ) S-2
+( a r ) S-3
+( f g ) S-9
+( h j ) S-0 
+( j l ) S-;
+( w r ) S-, ;;<
+( u o ) S-. ;;>
+( s f ) =
+( d f ) S-[ ;;{ 
+( j k ) S-] ;;}
+( d g ) [
+( d k ) S-- ;;_
+( h k ) ]
+( e r ) S-=
+( r t ) - 
+( y u ) S-8 ;;*
+( e t ) S-\ ;;|
+( y i ) S-7 ;;&
+( y o ) (macro - S-.) ;;->
+( s g ) S-' ;; "
+( h l ) '
+( u h ) /
+( r g ) \
+( g F17 ) S-1 ;; !
+( h b ) S-/ 
+( q s ) (macro esc S-; w q ret)
+)
+
+(deflayer normal
+(chord programming q)
+(chord programming w)
+(chord programming e)
+(chord programming r)
+(chord programming t)
+(chord programming y)
+(chord programming u)
+(chord programming i)
+(chord programming o)
+(chord programming p)
+(chord programming a)
+(chord programming s)
+(chord programming d)
+(chord programming f)
+(chord programming g)
+(chord programming h)
+(chord programming j)
+(chord programming k)
+(chord programming l)
+(chord programming ;)
+(layer-while-held numbers)
+(chord programming z)
+(chord programming x)
+(chord programming c)
+(chord programming v)
+(chord programming F17)
+(chord programming b)
+(chord programming n)
+(chord programming m)
+(chord programming ret)
+(chord programming spc) 
+(one-shot-press 2000 lsft)
+tab
+(tap-hold 100 100 esc lmet)
+;
+)
+
+(deflayer navigation
+_  ;;q
+_  ;;w
+_  ;;e
+_  ;;r
+_  ;;t
+C-d ;;y
+C-u  ;;u
+_  ;;i
+_  ;;o
+_  ;;p
+_  ;;a
+_  ;;s
+_  ;;d
+home  ;;f
+end ;;g
+left  ;;h
+down  ;;j
+up  ;;k
+rght  ;;l
+_  ;;;
+_  ;;'
+_  ;;z
+_  ;;x
+_  ;;c
+_  ;;v
+_  ;;F7)
+C-e
+C-y
+_  ;;m
+(tap-hold 200 200 ret (layer-while-held navigation))
+_
+_
+_
+_
+_
+)
+
+(deflayer numbers
+_  ;;q
+S-9  ;;w
+S-= ;;e
+-  ;;r
+S-6  ;;t
+S-5  ;;y
+S-8  ;;u
+/  ;;i
+S-0  ;;o
+_  ;;p
+1  ;;a
+2  ;;s
+3  ;;d
+4  ;;f
+5 ;;g
+6  ;;h
+7  ;;j
+8  ;;k
+9  ;;l
+0  ;;;
+_  ;;'
+_  ;;z
+_  ;;x
+_  ;;c
+_  ;;v
+_  ;;F7)
+_  ;;b
+_  ;;n
+_  ;;m
+(tap-hold 200 200 ret (layer-while-held navigation))
+spc
+_
+_
+_
+_
+)
+
+
+
+
