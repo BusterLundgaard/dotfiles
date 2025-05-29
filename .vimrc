@@ -5,6 +5,7 @@ Plug 'tpope/vim-commentary'
 Plug 'frazrepo/vim-rainbow'
 Plug 'simnalamburt/vim-mundo'
 Plug 'justinmk/vim-dirvish'
+Plug 'junegunn/vim-easy-align'
 Plug 'roginfarrer/vim-dirvish-dovish', {'branch': 'main'}
 Plug 'junegunn/goyo.vim'
 call plug#end()
@@ -33,6 +34,9 @@ nnoremap <A-g> :vertical resize -10<CR>
 nnoremap <A-s> :vertical resize +10<CR>
 nnoremap yl :silent !latexmk -pdf % > /dev/null 2>&1 &<CR>:redraw!<CR>
 
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
+
 " Toggle number + relativenumber with Alt+n
 nnoremap <silent> <A-n> :call ToggleLineNumbers()<CR>
 
@@ -44,7 +48,29 @@ function! ToggleLineNumbers()
   endif
 endfunction
 
-
+" EASY ALIGN	
+" ==================================================
+let g:easy_align_delimiters = {
+\ ';': { 'pattern': ';', 'left_margin': 0, 'right_margin': 1, 'stick_to_left': 1 },
+\ '_': { 'pattern': '_', 'left_margin': 0, 'right_margin': 0, 'stick_to_left': 0 },
+\ 'c': { 'pattern': '_', 'left_margin': 0, 'right_margin': 0, 'stick_to_left': 0 }
+\ }
+" let s:easy_align_delimiters_default = {
+" \  ' ': { 'pattern': ' ',  'left_margin': 0, 'right_margin': 0, 'stick_to_left': 0 },
+" \  '=': { 'pattern': '===\|<=>\|\(&&\|||\|<<\|>>\)=\|=\~[#?]\?\|=>\|[:+/*!%^=><&|.-]\?=[#?]\?',
+" \                          'left_margin': 1, 'right_margin': 1, 'stick_to_left': 0 },
+" \  ':': { 'pattern': ':',  'left_margin': 0, 'right_margin': 1, 'stick_to_left': 1 },
+" \  ',': { 'pattern': ',',  'left_margin': 0, 'right_margin': 1, 'stick_to_left': 1 },
+" \  '|': { 'pattern': '|',  'left_margin': 1, 'right_margin': 1, 'stick_to_left': 0 },
+" \  '.': { 'pattern': '\.', 'left_margin': 0, 'right_margin': 0, 'stick_to_left': 0 },
+" \  '#': { 'pattern': '#\+', 'delimiter_align': 'l', 'ignore_groups': ['!Comment']  },
+" \  '&': { 'pattern': '\\\@<!&\|\\\\',
+" \                          'left_margin': 1, 'right_margin': 1, 'stick_to_left': 0 },
+" \  '{': { 'pattern': '(\@<!{',
+" \                          'left_margin': 1, 'right_margin': 1, 'stick_to_left': 0 },
+" \  '}': { 'pattern': '}',  'left_margin': 1, 'right_margin': 0, 'stick_to_left': 0 }
+" \ }
+" ===========================================================
 
 " DIRVISH
 " ======================================================
@@ -143,5 +169,6 @@ set tabstop=4
 set shiftwidth=4
 set hidden
 set so=999
+set wrap!
 
 let g:fzf_layout = { 'down': 12 }
