@@ -1,3 +1,8 @@
+(defcfg 
+process-unmapped-keys yes
+concurrent-tap-hold true
+)
+
 (defsrc
 ;; normal letters
 q
@@ -40,21 +45,18 @@ m
 8
 9
 
-;; symols (top to bottom)
--
-=
-[
-]
-\
+;; symols 
 ;
-'
 ,
-.
+[
+\
 /
+'
+=
 
 ;; special and modifier keys
 ret
-F13
+F13     ;; F13 is the enter key actually
 lmet
 )
 
@@ -62,159 +64,35 @@ lmet
 ;; NORMAL
 (deflayer normal
 ;; normal letters
-q   ;; q
-w   ;; w
-e   ;; e
-r   ;; r
-t   ;; t
-y   ;; y
-u   ;; u
-i   ;; i
-o   ;; o
+_   ;; q
+_   ;; w
+_   ;; e
+_   ;; r
+_   ;; t
+_   ;; y
+_   ;; u
+_   ;; i
+_   ;; o
 (tap-dance-eager 1000 ((macro (unicode æ)) (macro bspc (unicode ø)) (macro bspc (unicode å))))   ;; p
-a   ;; a
-s   ;; s
-d   ;; d
-f   ;; f
-g   ;; g
-h   ;; h
-j   ;; j
-k   ;; k
-l   ;; l
-z   ;; z
-x   ;; x
-c   ;; c
-v   ;; v
+_   ;; a
+_   ;; s
+(tap-hold 120 100 d (layer-while-held speciald)) ;; d 
+(tap-hold 120 100 f (layer-while-held specialf)) ;; f 
+_   ;; g
+_   ;; h
+_   ;; j
+_   ;; k
+_   ;; l
+_   ;; z
+_   ;; x
+_   ;; c
+_   ;; v
 b   ;; b
 b   ;; b
-n   ;; n
-m   ;; m
+_   ;; n
+_   ;; m
 
 ;; numbers
-' ;; 0
-S-5 ;; 1
-S-2 ;; 2
-S-' ;; 3
-[   ;; 4
-S-[ ;; 5
-S-9 ;; 6
-S-0 ;; 7
-S-] ;; 8
-] ;; 9
-
-;; symols (top to bottom)
-- ;; -
-S-= ;; =
-, ;; [
-= ;; ]
-caps ;; \
-p ;; ;
-(one-shot-press 2000 (layer-while-held special)) ;; '
-S-- ;; ,
-. ;; .
-; ;; /
-
-;; special and modifier keys
-(tap-hold 50 95 ret (layer-while-held navigation)) ;; ret 
-S-; ;; F13
-(tap-hold 50 95 esc lmet)
-)
-
-
-;; SPECIAL
-(deflayer special
-  ;; normal letters
-(macro esc S-; q ret) ;; q
-(macro esc S-; w ret) ;; w
-S-3 ;; e
-_ ;; r
-\ ;; t
-/ ;; y
-(macro - S-. ) ;; u
-_ ;; i
-_ ;; o
-_ ;; p
-_ ;; a
-S-4 ;; s
-_ ;; d
-S-6 ;; f
-S-\ ;; g
-S-7 ;; h
-S-8 ;; j
-_ ;; k
-_ ;; l
-_ ;; z
-_ ;; x
-_ ;; c
-S-, ;; v
-S-1 ;; F17
-S-/ ;; b
-S-. ;; n
-_ ;; m
-  ;; 
-  ;; numbers
-0 ;; 0
-1 ;; 1
-2 ;; 2
-3 ;; 3
-4 ;; 4
-5 ;; 5
-6 ;; 6
-7 ;; 7
-8 ;; 8
-9 ;; 9
-  ;; 
-  ;; symols (top to bottom)
-_ ;; -
-_ ;; =
-_ ;; [
-_ ;; ]
-_ ;; \
-_ ;; ;
-_ ;; '
-_ ;; ,
-_ ;; .
-_ ;; /
-  ;; 
-  ;; special and modifier keys
-_ ;; ret
-_ ;; F13
-_
-)
-
-
-;; NAVIGATION
-(deflayer navigation
-  ;; normal letters
-_ ;; q
-_ ;; w
-_ ;; e
-_ ;; r
-_ ;; t
-C-d ;; y
-C-u ;; u
-_ ;; i
-_ ;; o
-_ ;; p
-_ ;; a
-_ ;; s
-home ;; d
-end ;; f
-_ ;; g
-left ;; h
-down  ;; j
-up ;; k
-right ;; l
-_ ;; z
-_ ;; x
-_ ;; c
-_ ;; v
-_ ;; F17
-C-e ;; b
-C-y ;; n
-_ ;; m
-  ;; 
-  ;; numbers
 _ ;; 0
 _ ;; 1
 _ ;; 2
@@ -225,21 +103,199 @@ _ ;; 6
 _ ;; 7
 _ ;; 8
 _ ;; 9
-  ;; 
-  ;; symols (top to bottom)
-_ ;; -
-_ ;; =
-_ ;; [
-_ ;; ]
-_ ;; \
-_ ;; ;
-_ ;; '
-_ ;; ,
-_ ;; .
-_ ;; /
-  ;; 
-  ;; special and modifier keys
-_ ;; ret
-_ ;; F13
-_
+
+;; symols (top to bottom)
+p    ;; ;
+S--  ;; ,
+,    ;; [
+caps ;; \
+;    ;; /
+S-/
++
+
+;; special and modifier keys
+(tap-hold 50 95 ret (layer-while-held navigation)) ;; ret 
+S-;                                                ;; F13, aka Enter
+(tap-hold 50 95 esc lmet)                          ;; Meta key, aka caps
+)
+
+
+(deflayer speciald
+;; normal letters
+_		;;	q
+_		;;	w
+_		;;	e
+_		;;	r
+_		;;	t
+-		;;	y
+=		;;	u
+S-=		;;	i
+S-1		;;	o
+_		;;	p
+_		;;	a
+_		;;	s
+_		;;	d
+_		;;	f
+_		;;	g
+S-[		;;	h
+S-9		;;	j
+S-0		;;	k
+S-]		;;	l
+_		;;	z
+_		;;	x
+_		;;	c
+_		;;	v
+_		;;	F17
+_		;;	b
+S-,		;;	n
+S-.		;;  m
+
+		;;	;; numbers
+_		;;	0
+_		;;	1
+_		;;	2
+_		;;	3
+_		;;	4
+_		;;	5
+_		;;	6
+_		;;	7
+_		;;	8
+_		;;	9
+
+		;;	;; symols 
+_		;;	;
+_		;;	,
+_		;;	[
+_		;;	\
+;    ;; /
+S-/
++
+
+		;;	;; special and modifier keys
+_		;;	ret
+_		;;	F13 is the enter key actually
+_		;;	lmet
+)
+
+
+(deflayer specialf
+;; normal letters
+_		;;	q
+_		;;	w
+_		;;	e
+_		;;	r
+_		;;	t
+[		;;	y
+S-8		;;	u
+S-5		;;	i
+]		;;	o
+_		;;	p
+_		;;	a
+_		;;	s
+_		;;	d
+_		;;	f
+_		;;	g
+S-7		;;	h
+S-'		;;	j
+'		;;	k
+S-\		;;	l
+_		;;	z
+_		;;	x
+_		;;	c
+_		;;	v
+_		;;	F17
+_		;;	b
+_		;;	n
+_		;;  m
+
+		;;	;; numbers
+_		;;	0
+_		;;	1
+_		;;	2
+_		;;	3
+_		;;	4
+_		;;	5
+_		;;	6
+_		;;	7
+_		;;	8
+_		;;	9
+
+		;;	;; symols 
+_		;;	;
+_		;;	,
+_		;;	[
+_		;;	\
+;    ;; /
+S-/
++
+
+		;;	;; special and modifier keys
+_		;;	ret
+_		;;	F13 is the enter key actually
+_		;;	lmet
+)
+
+
+;; NAVIGATION
+(deflayer navigation
+;; normal letters
+_		;;	q
+_		;;	w
+_		;;	e
+_		;;	r
+_		;;	t
+_    	;;	y
+_    	;;	u
+_    	;;	i
+_    	;;	o
+_		;;	p
+_		;;	a
+_		;;	s
+home	;;	d
+end		;;	f
+_		;;	g
+left	;;	h
+down	;;	j
+up		;;	k
+rght	;;	l
+_		;;	z
+_		;;	x
+_		;;	c
+_		;;	v
+_		;;	F17
+_		;;	b
+_		;;	n
+_		;;  m
+
+		;;	;; numbers
+_		;;	0
+_		;;	1
+_		;;	2
+_		;;	3
+_		;;	4
+_		;;	5
+_		;;	6
+_		;;	7
+_		;;	8
+_		;;	9
+
+		;;	;; symols 
+_		;;	;
+_		;;	,
+_		;;	[
+_		;;	\
+	;    ;; /
+S-/
++
+
+		;;	;; special and modifier keys
+_		;;	ret
+_		;;	F13 is the enter key actually
+_		;;	lmet
+)
+
+
+(defchordsv2
+( j i ) / 50 first-release (navigation speciald specialf)
+( e f ) \ 50 first-release (navigation speciald specialf)
 )

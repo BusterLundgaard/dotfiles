@@ -8,6 +8,7 @@ Plug 'justinmk/vim-dirvish'
 Plug 'junegunn/vim-easy-align'
 Plug 'roginfarrer/vim-dirvish-dovish', {'branch': 'main'}
 Plug 'junegunn/goyo.vim'
+Plug 'jlanzarotta/bufexplorer'
 call plug#end()
 
 nnoremap `` `.
@@ -32,10 +33,12 @@ nnoremap <A-e> :tabprevious<CR>
 nnoremap <A-r> :tabnext<CR>
 nnoremap <A-g> :vertical resize -10<CR>
 nnoremap <A-s> :vertical resize +10<CR>
-nnoremap yl :silent !latexmk -pdf % > /dev/null 2>&1 &<CR>:redraw!<CR>
+nnoremap yl :silent !pdflatex -interaction=nonstopmode % > /dev/null 2>&1 &<CR>:redraw!<CR>
 
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
+
+nnoremap <A-b> :BufExplorer<CR>
 
 " Toggle number + relativenumber with Alt+n
 nnoremap <silent> <A-n> :call ToggleLineNumbers()<CR>
@@ -85,52 +88,26 @@ let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow --glob "!.git/*"'
 set grepprg=rg\ --vimgrep\ --smart-case\ --follow
 command! -nargs=* Rgi call fzf#vim#grep("rg -i --vimgrep --hidden --glob '!.git/*' ".shellescape(<q-args>), 1, fzf#vim#with_preview(), 0)
 
-function! s:open_file_and_close_current(file)
-  " Save current buffer if modified
-  if &modified
-    write
-  endif
-
-  " Get current buffer number
-  let l:curbuf = bufnr('%')
-
-  " Check if buffer is visible in more than one window
-  if len(win_findbuf(l:curbuf)) <= 1	
-    exec 'bd'
-  endif
-
-  " Open selected file
-  exec 'edit ' . fnameescape(a:file)
-endfunction
-
-function! SmartBufferClean()
-  " Save current buffer number
-  let l:curbuf = bufnr('%')
-
-  " Delete all buffers
-  silent! execute '%bd'
-
-  " Reopen the saved buffer if it still exists
-  if buflisted(l:curbuf)
-    execute 'buffer' l:curbuf
-  else
-    " Fallback: try to reopen alternate file
-    if expand('#') != ''
-      execute 'edit #'
-    endif
-  endif
-endfunction
-
-" Map it to <Del><Del>
-nnoremap <silent> <Del><Del> :call SmartBufferClean()<CR>
+let g:fzf_action = {
+			\'ctrl-t': 'tab split',
+			\'ctrl-x': 'split',
+			\'ctrl-v': 'vsplit'}	
 " ==========================================================================
+
+" CTAGS
+" ==================================================================
+set tags=./tags,/usr/lib/zig/std/tags
+" ===============================================================
 
 " ZEN MODE
 " =============================================================
 let g:display_line_mode = 0
 
-function! ToggleDisplayLineMode()
+function! ToggleZenMode()
   if g:display_line_mode
+	Goyo!
+	set nowrap
+	set nolinebreak
     unmap j
     unmap k
     unmap <buffer> j
@@ -138,6 +115,9 @@ function! ToggleDisplayLineMode()
     let g:display_line_mode = 0
     echo "Display-line mode OFF"
   else
+	Goyo
+	set wrap
+	set linebreak
     nnoremap j gj
     nnoremap k gk
     vnoremap j gj
@@ -147,14 +127,16 @@ function! ToggleDisplayLineMode()
   endif
 endfunction
 
-command! Zen call ZenMode()
-
 function! ZenMode()
   Goyo
   set wrap!
+  set linebreak!
   call ToggleDisplayLineMode()
 endfunction
+
+command! Zen call ToggleZenMode()
 " =============================================================
+
 
 set number
 set nocompatible

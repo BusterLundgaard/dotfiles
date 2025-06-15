@@ -1,0 +1,245 @@
+(defsrc
+;; normal letters
+q
+w
+e
+r
+t
+y
+u
+i
+o
+p
+a
+s
+d
+f
+g
+h
+j
+k
+l
+z
+x
+c
+v
+F17
+b
+n
+m
+
+;; numbers
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+;; symols (top to bottom)
+-
+=
+[
+]
+\
+;
+'
+,
+.
+/
+
+;; special and modifier keys
+ret
+F13
+lmet
+)
+
+
+;; NORMAL
+(deflayer normal
+;; normal letters
+q   ;; q
+w   ;; w
+e   ;; e
+r   ;; r
+t   ;; t
+y   ;; y
+u   ;; u
+i   ;; i
+o   ;; o
+(tap-dance-eager 1000 ((macro (unicode æ)) (macro bspc (unicode ø)) (macro bspc (unicode å))))   ;; p
+a   ;; a
+s   ;; s
+d   ;; d
+f   ;; f
+g   ;; g
+h   ;; h
+j   ;; j
+k   ;; k
+l   ;; l
+z   ;; z
+x   ;; x
+c   ;; c
+v   ;; v
+b   ;; b
+b   ;; b
+n   ;; n
+m   ;; m
+
+;; numbers
+' ;; 0
+S-5 ;; 1
+S-2 ;; 2
+S-' ;; 3
+[   ;; 4
+S-[ ;; 5
+S-9 ;; 6
+S-0 ;; 7
+S-] ;; 8
+] ;; 9
+
+;; symols (top to bottom)
+- ;; -
+S-= ;; =
+, ;; [
+= ;; ]
+caps ;; \
+p ;; ;
+(one-shot-press 2000 (layer-while-held special)) ;; '
+S-- ;; ,
+. ;; .
+; ;; /
+
+;; special and modifier keys
+(tap-hold 50 95 ret (layer-while-held navigation)) ;; ret 
+S-; ;; F13
+(tap-hold 50 95 esc lmet)
+)
+
+
+;; SPECIAL
+(deflayer special
+  ;; normal letters
+(macro esc S-; q ret) ;; q
+(macro esc S-; w ret) ;; w
+S-3 ;; e
+_ ;; r
+\ ;; t
+/ ;; y
+(macro - S-. ) ;; u
+_ ;; i
+_ ;; o
+_ ;; p
+_ ;; a
+S-4 ;; s
+_ ;; d
+S-6 ;; f
+S-\ ;; g
+S-7 ;; h
+S-8 ;; j
+_ ;; k
+_ ;; l
+_ ;; z
+_ ;; x
+_ ;; c
+S-, ;; v
+S-1 ;; F17
+S-/ ;; b
+S-. ;; n
+_ ;; m
+  ;; 
+  ;; numbers
+0 ;; 0
+1 ;; 1
+2 ;; 2
+3 ;; 3
+4 ;; 4
+5 ;; 5
+6 ;; 6
+7 ;; 7
+8 ;; 8
+9 ;; 9
+  ;; 
+  ;; symols (top to bottom)
+_ ;; -
+_ ;; =
+_ ;; [
+_ ;; ]
+_ ;; \
+_ ;; ;
+_ ;; '
+_ ;; ,
+_ ;; .
+_ ;; /
+  ;; 
+  ;; special and modifier keys
+_ ;; ret
+_ ;; F13
+_
+)
+
+
+;; NAVIGATION
+(deflayer navigation
+  ;; normal letters
+_ ;; q
+_ ;; w
+_ ;; e
+_ ;; r
+_ ;; t
+C-d ;; y
+C-u ;; u
+_ ;; i
+_ ;; o
+_ ;; p
+_ ;; a
+_ ;; s
+home ;; d
+end ;; f
+_ ;; g
+left ;; h
+down  ;; j
+up ;; k
+right ;; l
+_ ;; z
+_ ;; x
+_ ;; c
+_ ;; v
+_ ;; F17
+C-e ;; b
+C-y ;; n
+_ ;; m
+  ;; 
+  ;; numbers
+_ ;; 0
+_ ;; 1
+_ ;; 2
+_ ;; 3
+_ ;; 4
+_ ;; 5
+_ ;; 6
+_ ;; 7
+_ ;; 8
+_ ;; 9
+  ;; 
+  ;; symols (top to bottom)
+_ ;; -
+_ ;; =
+_ ;; [
+_ ;; ]
+_ ;; \
+_ ;; ;
+_ ;; '
+_ ;; ,
+_ ;; .
+_ ;; /
+  ;; 
+  ;; special and modifier keys
+_ ;; ret
+_ ;; F13
+_
+)

@@ -35,3 +35,4 @@ tere() {
 }
 
 export PATH=$PATH:~/.local/bin
+export PULSE_LATENCY_MSEC=90
