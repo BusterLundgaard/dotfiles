@@ -76,8 +76,8 @@ _   ;; o
 (tap-dance-eager 1000 ((macro (unicode æ)) (macro bspc (unicode ø)) (macro bspc (unicode å))))   ;; p
 _   ;; a
 _   ;; s
-(tap-hold 20 200 d (layer-while-held speciald)) ;; d 
-(tap-hold 20 200 f (layer-while-held specialf)) ;; f 
+(tap-hold 70 120 d (layer-while-held speciald)) ;; d 
+(tap-hold 70 120 f (layer-while-held specialf)) ;; f 
 _   ;; g
 _   ;; h
 _   ;; j
