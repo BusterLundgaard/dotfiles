@@ -1,12 +1,9 @@
 -- TODO:
--- Better keybinds for telescope 
 -- Basic LSP setup
--- Basic color/syntax highlighting setup
--- Shortcuts to move screen
--- Make tab size way smaller
--- Install a bunch of the missing plugins you had earlier.
+-- Still want better half a screen scrolling!
 
--- OPTIONS
+-- ESSENTIAL OPTIONS
+----------------------------------------------------------------------------------------------------------------------------------
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
@@ -16,6 +13,7 @@ vim.o.relativenumber = true
 vim.o.wrap = false
 vim.o.breakindent = true
 vim.o.showbreak = '↪'
+vim.o.tabstop = 3
 
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '.', nbsp = '␣' }
@@ -45,8 +43,11 @@ vim.o.inccommand = 'split'
 -- Ask user if they want to save unsaved buffer when performming an operation that would fail due to an unsaved buffer
 vim.o.confirm = true
 
+vim.g.neovide_refresh_rate = 60
+---------------------------------------------------------------------------------------------------------------------------------
 
 -- KEYMAPS
+---------------------------------------------------------------------------------------------------------------------------------
 vim.keymap.set(
 	'n', -- In normal mode
 	'<CR>', -- Set what enter does
@@ -68,6 +69,13 @@ vim.keymap.set('n', '<C-f>', '<cmd>vsplit<CR>', {desc = 'Split window horizontal
 vim.keymap.set('n', '<C-q>', '<cmd>q<CR>', {desc = 'Quit window'})
 vim.keymap.set('n', '<C-w>', '<cmd>w<CR>', {desc = 'Save bufer'})
 
+-- Move lines up/down
+vim.keymap.set('n', '<S-j>', ':m .+1<CR>==')
+vim.keymap.set('n', '<S-k>', ':m .-2<CR>==')
+vim.keymap.set('v', '<S-j>', ":m '>+1<CR>gv=gv")
+vim.keymap.set('v', '<S-k>', ":m '<-2<CR>gv=gv")
+---------------------------------------------------------------------------------------------------------------------------------
+
 
 --EVENTS / AUTOCOMMANDS
 --see :help lua-guide-autocommands for a guide on how to use autocommands
@@ -80,6 +88,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 
 -- PLUGINS
+---------------------------------------------------------------------------------------------------------------------------------
 -- First some stuff i dont quite get with installing lazy plugin manager:
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -95,6 +104,18 @@ rtp:prepend(lazypath)
 
 require('lazy').setup({
 	'NMAC427/guess-indent.nvim',
+	'numToStr/Comment.nvim',
+	'folke/zen-mode.nvim',
+	'junegunn/vim-easy-align',
+
+	-- File explorer
+	'justinmk/vim-dirvish',
+
+	-- Various small mini-improvements like extra text objects. Bassicly just nice extra motions for vim
+	'echasnovski/mini.nvim',
+
+	-- Highlight TODO's and some comments and such
+	 { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
 	{ -- Adds git related signs to the gutter, as well as utilities for managing changes
 		'lewis6991/gitsigns.nvim',
@@ -108,6 +129,44 @@ require('lazy').setup({
 			},
 		},
 	},
+
+	-- Colors and basic syntax highlighting!
+   { -- You can easily change to a different colorscheme.
+	  -- Change the name of the colorscheme plugin below, and then
+	  -- change the command in the config to whatever the name of that colorscheme is.
+	  --
+	  -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+	  'folke/tokyonight.nvim',
+	  priority = 1000, -- Make sure to load this before all the other start plugins.
+	  config = function()
+		 ---@diagnostic disable-next-line: missing-fields
+		 require('tokyonight').setup {
+			styles = {
+			  comments = { italic = false }, -- Disable italics in comments
+			},
+		 }
+
+		 -- Load the colorscheme here.
+		 -- Like many other themes, this one has different styles, and you could load
+		 -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+		 vim.cmd.colorscheme 'tokyonight-night'
+	  end,
+	},
+
+	-- More/better syntax highlighting with treesitter!
+	{
+		 'nvim-treesitter/nvim-treesitter',
+		 build = ':TSUpdate',
+		 config = function()
+			require('nvim-treesitter.configs').setup {
+			  ensure_installed = { "c", "lua", "python", "javascript" }, -- add what you use
+			  highlight = {
+				 enable = true, -- enable Treesitter highlighting
+			  },
+			}
+		 end,
+	},
+
 
 	{ --FZF/Telescope
 		'nvim-telescope/telescope.nvim',
@@ -153,10 +212,10 @@ require('lazy').setup({
 		      local builtin = require 'telescope.builtin'
 		      vim.keymap.set('n', '<leader>sh', builtin.help_tags,     { desc = '[S]earch [H]elp' })
 		      vim.keymap.set('n', '<leader>sk', builtin.keymaps,       { desc = '[S]earch [K]eymaps' })
-		      vim.keymap.set('n', '<leader>sf', builtin.find_files,    { desc = '[S]earch [F]iles' })
+		      vim.keymap.set('n', '<C-p>', builtin.find_files,    { desc = '[S]earch [F]iles' })
 		      vim.keymap.set('n', '<leader>ss', builtin.builtin,       { desc = '[S]earch [S]elect Telescope' })
 		      vim.keymap.set('n', '<leader>sw', builtin.grep_string,   { desc = '[S]earch current [W]ord' })
-		      vim.keymap.set('n', '<leader>sg', builtin.live_grep,     { desc = '[S]earch by [G]rep' })
+		      vim.keymap.set('n', '<C-g>', builtin.live_grep,     { desc = '[S]earch by [G]rep' })
 		      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
 		      -- Slightly advanced example of overriding default behavior and theme
@@ -185,3 +244,5 @@ require('lazy').setup({
 	},
 })
 
+require('Comment').setup()
+---------------------------------------------------------------------------------------------------------------------------------
