@@ -13,7 +13,8 @@ vim.o.relativenumber = true
 vim.o.wrap = false
 vim.o.breakindent = true
 vim.o.showbreak = '↪'
-vim.o.tabstop = 3
+vim.o.tabstop = 1
+vim.o.shiftwidth = 1
 
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '.', nbsp = '␣' }
@@ -160,9 +161,10 @@ require('lazy').setup({
 		 config = function()
 			require('nvim-treesitter.configs').setup {
 			  ensure_installed = { "c", "lua", "python", "javascript" }, -- add what you use
+			  ignore_install = {'org'},
 			  highlight = {
 				 enable = true, -- enable Treesitter highlighting
-			  },
+			  }
 			}
 		 end,
 	},
@@ -241,6 +243,64 @@ require('lazy').setup({
 			builtin.find_files { cwd = vim.fn.stdpath 'config' }
 		      end, { desc = '[S]earch [N]eovim files' })
 		end
+	},
+	{
+		  'nvim-orgmode/orgmode',
+		  event = 'VeryLazy',
+		  ft = {'org'},
+		  config = function()
+					 require('orgmode').setup({
+								org_agenda_files = '~/calendar/*',
+								org_default_notes_file = '~/calendar/tasks.org'
+					 })
+		  end,
+	},
+	{
+		  '3rd/image.nvim',
+		  build = false,
+		  opts = {
+					 processor = "magick_cli",
+		  },
+		  config = function()
+					 require("image").setup({
+								  backend = "kitty",
+								  processor = "magick_cli", -- or "magick_rock"
+								  integrations = {
+									 markdown = {
+										enabled = true,
+										clear_in_insert_mode = false,
+										download_remote_images = true,
+										only_render_image_at_cursor = false,
+										only_render_image_at_cursor_mode = "popup",
+										floating_windows = false, -- if true, images will be rendered in floating markdown windows
+										filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
+									 },
+									 neorg = {
+										enabled = true,
+										filetypes = { "norg" },
+									 },
+									 typst = {
+										enabled = true,
+										filetypes = { "typst" },
+									 },
+									 html = {
+										enabled = false,
+									 },
+									 css = {
+										enabled = false,
+									 },
+								  },
+								  max_width = nil,
+								  max_height = nil,
+								  max_width_window_percentage = nil,
+								  max_height_window_percentage = 50,
+								  window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
+								  window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
+								  editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
+								  tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+								  hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
+					 })
+		  end
 	},
 })
 
