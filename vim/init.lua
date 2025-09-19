@@ -1,6 +1,6 @@
 -- TODO:
 -- Basic LSP setup
--- Still want better half a screen scrolling!
+-- Still want half a screen scrolling!
 
 -- ESSENTIAL OPTIONS
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -11,10 +11,12 @@ vim.o.number = true
 vim.o.relativenumber = true
 
 vim.o.wrap = false
+
 vim.o.breakindent = true
 vim.o.showbreak = '↪'
-vim.o.tabstop = 1
-vim.o.shiftwidth = 1
+vim.o.tabstop = 3
+vim.o.shiftwidth = 3
+
 
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '.', nbsp = '␣' }
@@ -27,8 +29,8 @@ vim.g.have_nerd_font = true
 
 -- We do this scheduling as a trick to decrease startup time
 vim.schedule(function() 
-	vim.o.clipboard = 'unnamedplus'
 end)
+vim.o.clipboard = 'unnamedplus'
 
 vim.o.undofile = true
 
@@ -49,6 +51,23 @@ vim.g.neovide_refresh_rate = 60
 
 -- KEYMAPS
 ---------------------------------------------------------------------------------------------------------------------------------
+-- Make paste not paste what was recently deleted (so more usual behaviour like other programs)
+-- --- In normal mode
+vim.keymap.set('n',	'p',	'\"0p')
+vim.keymap.set('n','P','\"0P')
+vim.keymap.set('n','<C-p>','p')
+vim.keymap.set('n','<C-S-p>','P')
+-- --- In visual mode
+vim.keymap.set('v','p','\"0p')
+vim.keymap.set('v','P','\"0P')
+vim.keymap.set('v','<C-p>','p')
+vim.keymap.set('v','<C-S-p>','P')
+
+-- For quickly pasting over something
+vim.keymap.set('n', 'æw', 'vw\"0p')
+vim.keymap.set('n', 'æ<S-w>', 'vW\"0p')
+vim.keymap.set('n', 'æe', 've\"0p')
+
 vim.keymap.set(
 	'n', -- In normal mode
 	'<CR>', -- Set what enter does
@@ -67,17 +86,140 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', {desc = 'Move focus to the upper wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', {desc = 'Move focus to the right window'})
 vim.keymap.set('n', '<C-d>', '<cmd>split<CR>', {desc = 'Split window vertically'})
 vim.keymap.set('n', '<C-f>', '<cmd>vsplit<CR>', {desc = 'Split window horizontally'})
+vim.keymap.set('n', '<a-l>', '<cmd>vertical res +5<CR>', {desc = "Resize window left"})
+vim.keymap.set('n', '<a-h>', '<cmd>vertical res -5<CR>', {desc = "Resize window left"})
+vim.keymap.set('n', '<a-j>', '<cmd>horizontal res +5<CR>', {desc = "Resize window left"})
+vim.keymap.set('n', '<a-k>', '<cmd>horizontal res -5<CR>', {desc = "Resize window left"})
 vim.keymap.set('n', '<C-q>', '<cmd>q<CR>', {desc = 'Quit window'})
 vim.keymap.set('n', '<C-w>', '<cmd>w<CR>', {desc = 'Save bufer'})
+
+-- Compile commands
+vim.keymap.set('n', '<C-c>', function() 
+	vim.cmd("w")
+	local command = ""
+	local filetype = vim.bo.filetype
+	if filetype == 'typst' then
+		command = "typst compile --diagnostic-format=short " .. vim.api.nvim_buf_get_name(0)
+	else
+		command = "make"	
+	end
+	command = command .. " 2> compile_errors.txt"
+	vim.fn.jobstart(command, {
+		stderr_buffered = true,
+		on_exit = function(_, exit_code)
+			if exit_code ~= 0 then
+				vim.cmd("cfile compile_errors.txt")
+			else
+				print("Compile success!")
+			end
+		end
+	})
+end);
 
 -- Move lines up/down
 vim.keymap.set('n', '<S-j>', ':m .+1<CR>==')
 vim.keymap.set('n', '<S-k>', ':m .-2<CR>==')
 vim.keymap.set('v', '<S-j>', ":m '>+1<CR>gv=gv")
 vim.keymap.set('v', '<S-k>', ":m '<-2<CR>gv=gv")
+
 ---------------------------------------------------------------------------------------------------------------------------------
+-- CUSTOM OPERATORS! (HACKY AND WONKY)
+-- These are operators that expect a motion afterwards, then do something over that range
+-- The range that they operate on will start at the mark Z, end at the mark X
+
+empty_function = function() end
+custom_operation_function = empty_function
+
+function begin_custom_operation(operation_function) 
+	vim.cmd("normal! mZ") -- set a temporary mark
+	custom_operation_function = operation_function
+end
+
+-- "Paste onto" custom operation
+vim.keymap.set('n', 'ø', function() begin_custom_operation(function() 
+	vim.cmd("normal! mX") -- set mark for current position, use Z to access previous position
+	vim.cmd("normal! `Zv`X\"0P") -- paste in between marks, and the last charachter as well
+end) end)
+
+vim.api.nvim_create_autocmd('CursorMoved', {callback = function()
+	custom_operation_function()
+	custom_operation_function = empty_function
+end})
+
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = "*.man",
+  command = "set filetype=man"
+})
+
+---------------------------------------------------------------------------------------------------------------------------------
+-- CUSTOM WACKY AUTOCOMPLETION
+-- function _G.show_custom_window() 
+-- 	local buf = vim.api.nvim_create_buf(false, true)  -- create new (unlisted) buffer
+--
+-- 	local width = 30
+-- 	local height = 10
+-- 	local row = 5
+-- 	local col = 10
+--
+-- 	vim.api.nvim_open_win(buf, false, {
+-- 	  relative = 'cursor',
+-- 	  focusable = true,
+-- 	  noautocmd = true,
+-- 	  width = width,
+-- 	  height = height,
+-- 	  row = row,
+-- 	  col = col,
+-- 	  style = 'minimal',
+-- 	  border = 'single',
+-- 	})
+--
+-- 	vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
+-- 	  "This is a floating window",
+-- 	  "You can use it for custom UI!",
+-- 	})
+-- end
 
 
+---------------------------------------------------------------------------------------------------------------------------------
+---ZEN MODE
+zenmode = false
+previous_wrap = false
+previous_linebreak = false
+previous_listchars = vim.opt.listchars
+
+vim.api.nvim_create_user_command("Zen", function()
+	if not zenmode then
+		zenmode = true
+
+		previous_wrap = vim.o.wrap
+		previous_linebreak = vim.o.linebreak
+		vim.o.wrap = true
+		vim.o.linebreak = true
+
+		vim.o.showbreak = ''
+		vim.opt.listchars = { tab = '  ', trail = ' ', nbsp = ' ' }
+
+		vim.keymap.set('n', 'j', 'gj')
+		vim.keymap.set('n', 'k', 'gk')
+
+		vim.cmd("ZenMode")
+	else 
+		zenmode = false;
+		vim.o.wrap = previous_wrap
+		vim.o.linebreak = previous_linebreak
+		vim.opt.listchars = previous_listchars
+
+		vim.keymap.del('n', 'j')
+		vim.keymap.del('n', 'k')
+
+		vim.cmd("ZenMode")
+	end
+end, { desc = "Activate a slightly better Zen mode" })
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------
 --EVENTS / AUTOCOMMANDS
 --see :help lua-guide-autocommands for a guide on how to use autocommands
 --see :help events for a list of events you can listen to
@@ -106,7 +248,14 @@ rtp:prepend(lazypath)
 require('lazy').setup({
 	'NMAC427/guess-indent.nvim',
 	'numToStr/Comment.nvim',
-	'folke/zen-mode.nvim',
+	{
+		'folke/zen-mode.nvim',
+		opts = {
+			window = {
+				width = 80
+			}
+		}
+	},
 	'junegunn/vim-easy-align',
 
 	-- File explorer
@@ -117,6 +266,7 @@ require('lazy').setup({
 
 	-- Highlight TODO's and some comments and such
 	 { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+	'ziontee113/color-picker.nvim',
 
 	{ -- Adds git related signs to the gutter, as well as utilities for managing changes
 		'lewis6991/gitsigns.nvim',
@@ -132,7 +282,7 @@ require('lazy').setup({
 	},
 
 	-- Colors and basic syntax highlighting!
-   { -- You can easily change to a different colorscheme.
+{ -- You can easily change to a different colorscheme.
 	  -- Change the name of the colorscheme plugin below, and then
 	  -- change the command in the config to whatever the name of that colorscheme is.
 	  --
@@ -154,13 +304,16 @@ require('lazy').setup({
 	  end,
 	},
 
+	-- Transparent background
+	'xiyaowong/transparent.nvim',
+
 	-- More/better syntax highlighting with treesitter!
 	{
 		 'nvim-treesitter/nvim-treesitter',
 		 build = ':TSUpdate',
 		 config = function()
 			require('nvim-treesitter.configs').setup {
-			  ensure_installed = { "c", "lua", "python", "javascript" }, -- add what you use
+			  ensure_installed = { "c", "lua", "python", "javascript", "typst" }, -- add what you use
 			  ignore_install = {'org'},
 			  highlight = {
 				 enable = true, -- enable Treesitter highlighting
@@ -214,7 +367,7 @@ require('lazy').setup({
 		      local builtin = require 'telescope.builtin'
 		      vim.keymap.set('n', '<leader>sh', builtin.help_tags,     { desc = '[S]earch [H]elp' })
 		      vim.keymap.set('n', '<leader>sk', builtin.keymaps,       { desc = '[S]earch [K]eymaps' })
-		      vim.keymap.set('n', '<C-p>', builtin.find_files,    { desc = '[S]earch [F]iles' })
+		      vim.keymap.set('n', '<leader>p', builtin.find_files,    { desc = '[S]earch [F]iles' })
 		      vim.keymap.set('n', '<leader>ss', builtin.builtin,       { desc = '[S]earch [S]elect Telescope' })
 		      vim.keymap.set('n', '<leader>sw', builtin.grep_string,   { desc = '[S]earch current [W]ord' })
 		      vim.keymap.set('n', '<C-g>', builtin.live_grep,     { desc = '[S]earch by [G]rep' })
@@ -305,4 +458,5 @@ require('lazy').setup({
 })
 
 require('Comment').setup()
+require('color-picker').setup()
 ---------------------------------------------------------------------------------------------------------------------------------

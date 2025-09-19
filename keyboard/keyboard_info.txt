@@ -1,0 +1,47 @@
+P: /devices/pci0000:00/0000:00:08.3/0000:65:00.0/usb3/3-2/3-2:1.2/0003:320F:5055.0015/input/input40/event18
+M: event18
+R: 18
+J: c13:82
+U: input
+D: c 13:82
+N: input/event18
+L: 0
+S: input/by-path/pci-0000:65:00.0-usbv2-0:2:1.2-event-mouse
+S: input/by-id/usb-Telink_CIDOO_ABM066-if02-event-mouse
+S: input/by-path/pci-0000:65:00.0-usb-0:2:1.2-event-mouse
+E: DEVPATH=/devices/pci0000:00/0000:00:08.3/0000:65:00.0/usb3/3-2/3-2:1.2/0003:320F:5055.0015/input/input40/event18
+E: SUBSYSTEM=input
+E: DEVNAME=/dev/input/event18
+E: MAJOR=13
+E: MINOR=82
+E: USEC_INITIALIZED=3449943165
+E: ID_INPUT=1
+E: ID_INPUT_MOUSE=1
+E: ID_BUS=usb
+E: ID_MODEL=CIDOO_ABM066
+E: ID_MODEL_ENC=CIDOO\x20ABM066
+E: ID_MODEL_ID=5055
+E: ID_SERIAL=Telink_CIDOO_ABM066
+E: ID_VENDOR=Telink
+E: ID_VENDOR_ENC=Telink
+E: ID_VENDOR_ID=320f
+E: ID_REVISION=0105
+E: ID_TYPE=hid
+E: ID_USB_MODEL=CIDOO_ABM066
+E: ID_USB_MODEL_ENC=CIDOO\x20ABM066
+E: ID_USB_MODEL_ID=5055
+E: ID_USB_SERIAL=Telink_CIDOO_ABM066
+E: ID_USB_VENDOR=Telink
+E: ID_USB_VENDOR_ENC=Telink
+E: ID_USB_VENDOR_ID=320f
+E: ID_USB_REVISION=0105
+E: ID_USB_TYPE=hid
+E: ID_USB_INTERFACES=:030101:030000:
+E: ID_USB_INTERFACE_NUM=02
+E: ID_USB_DRIVER=usbhid
+E: ID_PATH_WITH_USB_REVISION=pci-0000:65:00.0-usbv2-0:2:1.2
+E: ID_PATH=pci-0000:65:00.0-usb-0:2:1.2
+E: ID_PATH_TAG=pci-0000_65_00_0-usb-0_2_1_2
+E: LIBINPUT_DEVICE_GROUP=3/320f/5055:usb-0000:65:00.0-2
+E: DEVLINKS=/dev/input/by-path/pci-0000:65:00.0-usbv2-0:2:1.2-event-mouse /dev/input/by-id/usb-Telink_CIDOO_ABM066-if02-event-mouse /dev/input/by-path/pci-0000:65:00.0-usb-0:2:1.2-event-mouse
+

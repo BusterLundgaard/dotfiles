@@ -1,6 +1,10 @@
 (defcfg 
-process-unmapped-keys yes
-concurrent-tap-hold true
+	process-unmapped-keys yes
+	concurrent-tap-hold true
+	linux-dev-names-include (
+		"Telink CIDOO ABM066 Keyboard"
+		"Telink CIDOO ABM066"
+	)
 )
 
 (defsrc
@@ -53,11 +57,14 @@ m
 /
 '
 =
+]
 
 ;; special and modifier keys
 ret
 F13     ;; F13 is the enter key actually
 lmet
+tab
+spc
 )
 
 
@@ -112,11 +119,14 @@ caps ;; \
 ;    ;; /
 S-/
 +
+S-4 ;; $
 
 ;; special and modifier keys
 (tap-hold 50 95 ret (layer-while-held navigation)) ;; ret 
 S-;                                                ;; F13, aka Enter
 (tap-hold 50 95 esc lmet)                          ;; Meta key, aka caps
+S-6  ;; ^
+(tap-dance-eager 250 (spc (macro bspc tab)))
 )
 
 
@@ -127,17 +137,17 @@ _		;;	w
 _		;;	e
 _		;;	r
 _		;;	t
--		;;	y
+S-4	;;	y   $
 =		;;	u
-S-=		;;	i
-S-1		;;	o
+S-=		;;	i  +
+S-1		;;	o  !
 _		;;	p
 _		;;	a
 _		;;	s
 _		;;	d
 _		;;	f
 _		;;	g
-S-[		;;	h
+S-[		;;	h  
 S-9		;;	j
 S-0		;;	k
 S-]		;;	l
@@ -170,11 +180,14 @@ _		;;	\
 ;    ;; /
 S-/
 +
+_
 
 		;;	;; special and modifier keys
 _		;;	ret
 _		;;	F13 is the enter key actually
 _		;;	lmet
+_
+_
 )
 
 
@@ -228,11 +241,14 @@ _		;;	\
 ;    ;; /
 S-/
 +
+_
 
 		;;	;; special and modifier keys
 _		;;	ret
 _		;;	F13 is the enter key actually
 _		;;	lmet
+_
+_
 )
 
 
@@ -287,11 +303,14 @@ _		;;	\
 	;    ;; /
 S-/
 +
+_
 
 		;;	;; special and modifier keys
 _		;;	ret
 _		;;	F13 is the enter key actually
 _		;;	lmet
+_
+_
 )
 
 
