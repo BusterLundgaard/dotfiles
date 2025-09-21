@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkMenu" id="menu">
+	<child>
+		<object class="GtkMenuItem" id="r2kf120">
+			<property name="label">2880x1800@120</property>
+	  </object>
+	</child>
+	<child>
+		<object class="GtkMenuItem" id="r2kf60">
+			<property name="label">2880x1800@60</property>
+	  </object>
+	</child>
+	<child>
+		<object class="GtkMenuItem" id="r1kf120">
+			<property name="label">1920x1080@120</property>
+	  </object>
+	</child>
+	<child>
+		<object class="GtkMenuItem" id="disable">
+			<property name="label">disabled</property>
+	  </object>
+	</child>
+  </object>
+</interface>

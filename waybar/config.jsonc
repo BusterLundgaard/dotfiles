@@ -1,0 +1,324 @@
+{
+// =============================================================================================================
+// OVERALL SETTINGS (mostly all from man-page included)
+// =============================================================================================================
+
+// ... Position and layer of the waybar
+// -------------------------------------------------------------------------------------------------------------
+"layer": "bottom",
+// typeof: string
+// default: bottom
+// Decide if the bar is displayed in front (top) of the windows or behind (bottom)
+
+// "output",
+// typeof: string|array
+// Specifies on which screen this bar will be displayed. Exclamation mark(!) can be used to exclude  specific
+// output.
+// Output  specification  follows sway's and can either be the output port such as "HDMI-A-1", or a string con‐
+// sisting of the make, model, and serial such as "Some Company ABC123 0x00000000",. See sway-output(5) for de‐
+// tails. In an array, star '*' can be used at the end to accept all outputs, in case all previous entries are
+// exclusions.
+
+"exclusive": true,
+// typeof: bool
+// default: true
+// Option to request an exclusive zone from the compositor. Disable this to allow drawing application windows
+// underneath or on top of the bar.
+
+"gtk-layer-shell": true,
+
+"passthrough": false,
+// typeof: bool
+// default: false
+// Option to pass any pointer events to the window under the bar.
+// Intended to be used with either top or overlay layers and without exclusive zone.
+
+// "start_hidden",
+// typeof: bool
+// default: false
+// Option to start the bar hidden.
+
+"position": "top",
+// typeof: string
+// default: bottom
+// Decide if the bar is displayed in front (top) of the windows or behind (bottom)
+
+
+// ... Module positioning on the waybar
+// -------------------------------------------------------------------------------------------------------------
+//"no-center",
+// typeof: bool
+// default: false
+// Option to disable the center modules fully useful together with expand-*.
+
+"fixed-center": true,
+// typeof: bool
+// default: true
+// Prefer  fixed  center  position for the ‘modules-center‘ block. The center block will stay in the middle of
+// the bar whenever possible. It can still be pushed around if other blocks need more space. When  false,  the
+// center block is centered in the space between the left and right block.
+
+//"expand-center",
+// typeof: bool
+// default: false
+// Enables the modules-center to consume all left over space dynamically.
+
+//"expand-left",
+// typeof: bool
+// default: false
+// Enables the modules-left to consume all left over space dynamically.
+
+//"expand-right",
+// typeof: bool
+// default: false
+// Enables the modules-left to consume all left over space dynamically.
+
+// ... Visual theming of the waybar
+// -------------------------------------------------------------------------------------------------------------
+"height": 26,
+// typeof: integer
+// Height to be used by the bar if possible. Leave blank for a dynamic value.
+
+//"width",
+// typeof: integer
+// Width to be used by the bar if possible. Leave blank for a dynamic value.
+
+//"spacing": 2,
+// typeof: integer
+// Size of gaps in between the different modules.
+
+//"margin-left",
+// typeof: integer
+// Margins value without units.
+
+//"margin-right",
+// typeof: integer
+// Margins value without units.
+
+//"margin-bottom",
+// typeof: integer
+// Margins value without units.
+
+//"margin-top",
+// typeof: integer
+// Margins value without units.
+
+
+// =============================================================================================================
+// INCLUDED MODULES AND POSITIONS
+// =============================================================================================================
+"modules-left": [
+	"hyprland/workspaces", 
+	"hyprland/window"
+],
+"modules-right": [
+	"custom/kanata",
+	"custom/keyboardlang",
+	"custom/seperator",
+
+	"custom/laptopmonitor",
+	"custom/externalmonitor",
+	"custom/seperator",
+
+	"custom/audiooutput",
+	"pulseaudio",
+	"custom/seperator",
+
+	"cpu",
+	"memory",
+	"battery",
+	"custom/backlightdec",
+	"custom/backlightinc",
+	"backlight",
+	"custom/seperator",
+
+	"clock",
+	"custom/power",
+],
+"modules-center": [],
+
+
+// =============================================================================================================
+// CONFIGURING VARIOUS BUILTIN MODULES
+// =============================================================================================================
+"hyprland/workspaces": {
+	"on-click": "activate",
+	"format": "{id}",
+	"all-outputs": true,
+	"disable-scroll": false,
+	"active-only": false,
+},
+"hyprland/window": {
+	"format": "{title}",
+},
+
+"cpu": {
+	"format": " {usage}%",
+	"tooltip": true,
+	"interval": 1,
+},
+"memory": {
+	"format": " {used:0.1f}Gi",
+},
+"battery": {
+	"format": " {capacity}%",
+	"states": {
+		"megacritical":5,
+		"critical": 10,
+		"fourth": 25,
+		"half": 50,
+		"third": 75,
+		"fullish": 90
+	},
+	"events": {
+		"on-discharging-critical": "notify-send -u normal 'Low battery!'",
+		"on-discharging-megacritical": "notify-send -u normal 'Bro, battery is mega dying'",
+		"on-charging-100": "notify-send -u normal 'Yay, battery is full!'"
+	},
+	 "format-icons": ["", "", "", "", ""]
+},
+
+"pulseaudio": {
+	"format": "{icon} {volume}%",
+	"format-muted": "  muted",
+	"format-icons": {
+		"headphone": "",
+		"default": [" ", " ", " "],
+	},
+	"on-click": "pavucontrol",
+},
+
+ "clock": {
+		 "format": " {:L%a %d %b %H:%M}",
+		 "format-alt": "{:%A, %B %d, %Y (%R)}",
+		 "tooltip-format": "<tt><small>{calendar}</small></tt>",
+		 "calendar": {
+				"mode"          : "year",
+				"mode-mon-col"  : 3,
+				"weeks-pos"     : "right",
+				"on-scroll"     : 1,
+				"on-click-right": "mode",
+				"format": {
+					  "months":     "<span color='#ffead3'><b>{}</b></span>",
+					  "days":       "<span color='#ecc6d9'><b>{}</b></span>",
+					  "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
+					  "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
+					  "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
+				}
+		 },
+		 "actions": {
+				"on-click-right": "mode",
+				"on-click-forward": "tz_up",
+				"on-click-backward": "tz_down",
+				"on-scroll-up": "shift_up",
+				"on-scroll-down": "shift_down"
+		 }
+  },
+
+  "backlight": {
+		"device": "amdgpu_bl1",
+		"format": "{percent}% 󰃟 ",
+  },
+  "custom/backlightinc": {
+		"format": "",
+		"on-click": "brightnessctl -e4 -n2 set 5%+",
+		"tooltip": false
+  },
+  "custom/backlightdec": {
+		"format": "",
+		"on-click": "brightnessctl -e4 -n2 set 5%-",
+		"tooltip": false
+  },
+
+// =============================================================================================================
+// CUSTOM MODULES
+// =============================================================================================================
+"custom/power": {
+	"format": "⏻",
+	"tooltip": false,
+	"menu": "on-click",
+	"menu-file":"~/.config/waybar/power_toggle.xml",
+	"menu-actions": {
+		"shutdown": "shutdown now",
+		"reboot": "reboot",
+		"suspend": "systemctl suspend",
+		"hibernate": "systemctl hibernate"
+	}
+},
+
+"custom/keyboardlang": {
+	"exec": "~/.config/waybar/keyboard_lang_script.sh",
+	"signal": 10,
+	"menu": "on-click",
+	"tooltip": false,
+	"menu-file": "~/.config/waybar/keyboard_lang_toggle.xml",
+	"menu-actions": {
+		"dk": "cp ~/dotfiles/hyprland/inputs/danish.conf ~/dotfiles/hyprland/input.conf; pkill -SIGRTMIN+10 waybar",
+		"us": "cp ~/dotfiles/hyprland/inputs/english.conf ~/dotfiles/hyprland/input.conf; pkill -SIGRTMIN+10 waybar"
+	}
+},
+
+"custom/kanata": {
+	"exec": "~/.config/waybar/kanata_status.sh",
+	"signal": 10,
+	"tooltip": false,
+	"menu": "on-click",
+	"menu-file": "~/.config/waybar/kanata_toggle.xml",
+	"menu-actions": {
+		"on": "systemctl --user start kanata.service; pkill -SIGRTMIN+10 waybar",
+		"off": "sudo touch /tmp/kanata-start-trigger && sudo rm /tmp/kanata-start-trigger && systemctl --user stop kanata.service; pkill -SIGRTMIN+10 waybar"
+	}
+},
+
+"custom/laptopmonitor": {
+	"exec": "~/.config/waybar/laptop_monitor_status.sh",
+	"signal": 10,
+	"tooltip": false,
+	"menu": "on-click",
+	"menu-file": "~/.config/waybar/laptop_monitor_toggle.xml",
+	"menu-actions": {
+		"r2kf120": "cp ~/dotfiles/hyprland/monitors/laptop_2k_120.conf ~/dotfiles/hyprland/laptop_monitor.conf;  pkill -SIGRTMIN+10 waybar",
+		"r2kf60": "cp ~/dotfiles/hyprland/monitors/laptop_2k_60.conf ~/dotfiles/hyprland/laptop_monitor.conf;    pkill -SIGRTMIN+10 waybar",
+		"r1kf120": "cp ~/dotfiles/hyprland/monitors/laptop_1k_120.conf ~/dotfiles/hyprland/laptop_monitor.conf;  pkill -SIGRTMIN+10 waybar",
+		"disable": "cp ~/dotfiles/hyprland/monitors/laptop_disable.conf ~/dotfiles/hyprland/laptop_monitor.conf; pkill -SIGRTMIN+10 waybar",
+	}
+},
+
+"custom/externalmonitor": {
+	"exec": "~/.config/waybar/external_monitor_status.sh",
+	"signal": 10,
+	"tooltip": false,
+	"menu": "on-click",
+	"menu-file": "~/.config/waybar/external_monitor_toggle.xml",
+	"menu-actions": {
+		"r4k": "cp ~/dotfiles/hyprland/monitors/external_4k.conf ~/dotfiles/hyprland/external_monitor.conf; pkill -SIGRTMIN+10 waybar",
+		"r4kcrop": "cp ~/dotfiles/hyprland/monitors/external_4k_cropped.conf ~/dotfiles/hyprland/external_monitor.conf; pkill -SIGRTMIN+10 waybar",
+		"r2k": "cp ~/dotfiles/hyprland/monitors/external_2k.conf ~/dotfiles/hyprland/external_monitor.conf; pkill -SIGRTMIN+10 waybar",
+		"r2kcrop": "cp ~/dotfiles/hyprland/monitors/external_2k_cropped.conf ~/dotfiles/hyprland/external_monitor.conf; pkill -SIGRTMIN+10 waybar",
+		"r1k": "cp ~/dotfiles/hyprland/monitors/external_1k.conf ~/dotfiles/hyprland/external_monitor.conf; pkill -SIGRTMIN+10 waybar",
+		"disable": "cp ~/dotfiles/hyprland/monitors/external_disable.conf ~/dotfiles/hyprland/external_monitor.conf; pkill -SIGRTMIN+10 waybar",
+	}
+},
+
+"custom/audiooutput": {
+	"exec": "~/.config/waybar/get_selected_audio_sink.sh",
+	"signal": 10,
+	"tooltip": false,
+	"menu": "on-click",
+	"menu-file": "~/.config/waybar/audio_output_toggle.xml",
+	"menu-actions": {
+		"internal": "~/.config/waybar/set_audio_sink.sh internal && pkill -SIGRTMIN+10 waybar",
+		"external": "~/.config/waybar/set_audio_sink.sh external && pkill -SIGRTMIN+10 waybar" 
+	}
+},
+
+"custom/seperator": {
+	"format": "|",
+	"interval": "once",
+	"tooltip": false
+}
+// "custom/buster": {
+// 	"format":" "
+// }
+
+}

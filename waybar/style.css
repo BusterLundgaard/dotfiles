@@ -1,0 +1,147 @@
+/* =========================================*/
+/* Set overall style settings */
+/* =========================================*/
+* {
+  min-height: 0;
+  min-width: 0;
+  font-family: Lexend, "JetBrainsMono NFP";
+  font-size: 12px;
+  color:#000000;
+  font-weight: 600;
+}
+
+
+/* =========================================*/
+/* Set waybar background */
+/* =========================================*/
+window#waybar {
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  background-color: #11111b;
+}
+
+
+/* =========================================*/
+/* Set workspaces */
+/* =========================================*/
+#workspaces button {
+  padding: 0rem 0.25rem;
+  margin: 0rem 0.3rem;
+  border-radius: 0px;
+  background-color: #1e1e2e;
+  color: #cdd6f4;
+}
+#workspaces button:hover {
+  color: #1e1e2e;
+  background-color: #cdd6f4;
+}
+#workspaces button.active {
+  color: #000000;
+  background-color: #c8c8c8;
+}
+#workspaces button.urgent {
+  background-color: #1e1e2e;
+  color: #f38ba8;
+}
+
+#clock,
+#pulseaudio,
+#cpu,
+#memory,
+#window {
+  padding: 0rem 0.65rem;
+  border-radius: 0px;
+  margin: 0rem 0.1rem;
+  /* background-color: #181825; */
+  background-color: #1e1e2e;
+}
+
+#cpu {
+  color: #94e2d5;
+}
+
+#memory {
+  color: #cba6f7;
+}
+
+#clock {
+  color: #74c7ec;
+}
+
+#window {
+  color: #cdd6f4;
+}
+
+
+#pulseaudio.muted {
+  color: #a6adc8;
+}
+
+#battery {
+  color: #b4befe;
+  background-color: #1e1e2e;
+  padding: 0rem 0.5rem
+}
+
+tooltip {
+  background-color: #181825;
+  border: 2px solid #89b4fa;
+}
+#backlight{
+	color: #b4befe;
+	padding: 0rem 0.2rem;
+	background-color: #1e1e2e;
+}
+#custom-backlightdec{
+	color: #b4befe;
+	background-color: #1e1e2e;
+	padding: 0rem 0.2rem;
+	margin-left:0.5rem;
+}
+#custom-backlightinc{
+	color: #b4befe;
+	background-color: #1e1e2e;
+	padding: 0rem 0.2rem;
+}
+#custom-kanata {
+	color: #b4befe;
+	padding: 0rem 0.3rem;
+	background-color: #1e1e2e;
+}
+#custom-keyboardlang {
+	background-color: #1e2d38;
+	padding: 0rem 0.3rem;
+	color: #b4befe;
+}
+
+#custom-laptopmonitor {
+	color: #659ad2;
+	background-color: #1e1e2e;
+	padding: 0rem 0.3rem;
+}
+#custom-externalmonitor {
+	color: #659ad2;
+	background-color: #1e1e2e;
+	padding: 0rem 0.3rem;
+}
+
+#custom-audiooutput{
+	color: #659ad2;
+	background-color: #1e1e2e;
+	padding: 0rem 0.3rem;
+}
+#pulseaudio {
+  color: #b4befe;
+  
+}
+
+#custom-power{
+	margin-left: 1rem;
+}
+
+#custom-seperator{
+	color:white;
+	margin-left:0.4rem;
+	margin-right:0.4rem;
+}
+
