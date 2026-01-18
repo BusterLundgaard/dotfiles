@@ -1,0 +1,110 @@
+(defcfg
+	process-unmapped-keys yes
+	concurrent-tap-hold true
+)
+
+(defsrc
+;; one to one remappings
+/ 		 
+= 		 
+F13	 
+spc 	 
+
+;; layer keys
+ret
+d
+
+j
+k
+l
+p
+n
+m
+u
+h
+y
+f
+i
+o
+s
+lmet ;; meta key, aka no caps
+)
+
+(deffakekeys
+  my-single-key d
+)
+
+;; NORMAL
+(deflayer normal
+S-/		;; / 		 
+S-=		;; = 		 
+(tap-dance-eager 1000 ((macro (unicode æ)) (macro bspc (unicode ø)) (macro bspc (unicode å))))		;; F13	 
+(tap-dance-eager 250 (spc (macro bspc tab)))                                                  		;; spc 	 
+(tap-hold 50 95 ret (layer-while-held navigation))		;; ret
+(tap-hold 20 20 d (multi (on-press-fakekey my-single-key tap) (layer-while-held symbols)) ) ;; d
+_		;; j
+_		;; k
+_		;; l
+_		;; p
+_		;; n
+_		;; m
+_		;; u
+_		;; h
+_		;; y
+_		;; f
+_		;; i
+_		;; o
+_     ;; s
+(tap-hold 50 95 esc lmet)
+)
+
+(deflayer symbols
+(macro bspc ]) ;;  
+_		;; = 		 
+_		;; F13	 
+_		;; spc 	 
+_		;; ret
+XX		;; d
+(macro bspc 1 S-[)	   ;; j
+(macro bspc 1 S-9)		;; k
+(macro bspc 1 S-0)		;; l
+(macro bspc 1 S-])		;; p
+(macro bspc 1 S-,)		;; n
+(macro bspc 1 S-.)		;; m
+(macro bspc =)		;; u
+(macro bspc [)		;; h
+(macro bspc S-7)	;; y
+(macro bspc S-') ;; f
+(macro bspc S-8)		;;	i
+(macro bspc S-\)	;; o 
+(macro bspc ')   ;; s
+_
+)
+
+(deflayer navigation
+_			;; / 		 
+_			;; = 		 
+_			;; F13	 
+_			;; spc 	 
+_			;; ret
+home			;; d
+down			;; j
+up			;; k
+right			;; l
+_			;; p
+_			;; n
+_			;; m
+pgup			;; u
+left			;; h
+pgdn			;; y
+end			;; f
+_			;; i
+_			;; o
+_			;; s
+_
+)
+
+(defchordsv2
+( j i ) / 50 first-release (navigation symbols)
+( e f ) \ 50 first-release (navigation symbols)
+)

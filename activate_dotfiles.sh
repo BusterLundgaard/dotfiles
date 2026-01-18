@@ -1,5 +1,8 @@
 mkdir ~/{Media Images Music Notes Projects Recordings src}
 
+# Hyprland
+ln -s ~/dotfiles/hyprland/hyprland.conf ~/.config/hypr/hyprland.conf
+
 # Vim
 ln -s ~/dotfiles/vim/init.lua ~/.config/nvim/init.lua
 

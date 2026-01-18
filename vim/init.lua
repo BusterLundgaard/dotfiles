@@ -1,11 +1,14 @@
 -- TODO:
 -- Basic LSP setup
--- Still want half a screen scrolling!
+-- Want it to be possible to change what make command we use when we press ctrl+c
+-- Should be easier to turn off/on image preview
+-- Maybe the half-a-screen scrolling thing does it in "chunks" with a few ms between, so that it's easier to orient one self
+-- Maybe a quick way to move the cursor 15 lines?
 
 -- ESSENTIAL OPTIONS
 ----------------------------------------------------------------------------------------------------------------------------------
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+-- vim.g.mapleader = ' '
+-- vim.g.maplocalleader = ' '
 
 vim.o.number = true
 vim.o.relativenumber = true
@@ -17,11 +20,10 @@ vim.o.showbreak = '↪'
 vim.o.tabstop = 3
 vim.o.shiftwidth = 3
 
-
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '.', nbsp = '␣' }
 --how many lines to the bottom or top should the cursor be before we start scrolling the screen?
-vim.o.scrolloff = 10
+-- vim.o.scrolloff = 10
 
 vim.o.mouse = 'a'
 
@@ -37,7 +39,7 @@ vim.o.undofile = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
 
-vim.o.updatetime = 100
+vim.o.updatetime = 4000
 vim.o.timeoutlen = 300
 
 -- This somewhat cryptic setting previews substitutions live as you type!
@@ -46,10 +48,15 @@ vim.o.inccommand = 'split'
 -- Ask user if they want to save unsaved buffer when performming an operation that would fail due to an unsaved buffer
 vim.o.confirm = true
 
-vim.g.neovide_refresh_rate = 60
+vim.g.neovide_refresh_rate = 120
+
+vim.opt.grepprg = "rg --vimgrep"
+vim.opt.grepformat = "%f:%l:%c:%m"
+vim.opt.switchbuf = { 'useopen', 'usetab' }
+
 ---------------------------------------------------------------------------------------------------------------------------------
 
--- KEYMAPS
+-- BASIC KEYMAPS
 ---------------------------------------------------------------------------------------------------------------------------------
 -- Make paste not paste what was recently deleted (so more usual behaviour like other programs)
 -- --- In normal mode
@@ -93,7 +100,133 @@ vim.keymap.set('n', '<a-k>', '<cmd>horizontal res -5<CR>', {desc = "Resize windo
 vim.keymap.set('n', '<C-q>', '<cmd>q<CR>', {desc = 'Quit window'})
 vim.keymap.set('n', '<C-w>', '<cmd>w<CR>', {desc = 'Save bufer'})
 
--- Compile commands
+vim.keymap.set('n', '<C-n>', '<cmd>cnext<CR>')
+vim.keymap.set('n', '<C-b>', '<cmd>cprev<CR>')
+
+vim.keymap.set('n', '<a-1>', '<cmd>tabfir<CR>');
+vim.keymap.set('n', '<a-2>', '<cmd>tabfir<CR><cmd>+tabnext<CR>')
+vim.keymap.set('n', '<a-3>', '<cmd>tabfir<CR><cmd>+2tabnext<CR>')
+vim.keymap.set('n', '<a-4>', '<cmd>tabfir<CR><cmd>+3tabnext<CR>')
+vim.keymap.set('n', '<a-5>', '<cmd>tabfir<CR><cmd>+4tabnext<CR>')
+vim.keymap.set('n', '<a-6>', '<cmd>tabfir<CR><cmd>+5tabnext<CR>')
+vim.keymap.set('n', '<a-7>', '<cmd>tabfir<CR><cmd>+6tabnext<CR>')
+vim.keymap.set('n', '<a-+>', '<cmd>tabnew<CR>')
+vim.keymap.set('n', '<a-->', '<cmd>tabclose<CR>')
+vim.keymap.set('n', '<a-tab>', '<cmd>tabnext<CR>')
+
+
+---------------------------------------------------------------------------------------------------------
+--- WHOLE BUNCH OF COMPLICATED SCROLLING BEHAVIOUR
+---------------------------------------------------------------------------------------------------------
+local scroll_namespace_id = vim.api.nvim_create_namespace("scrolling_namespace")
+function highlight_around_current_line_a_bit() 
+	local buf = vim.api.nvim_get_current_buf()
+	local current_line_number = vim.fn.getpos(".")[2]
+	local next_line_length = string.len(vim.fn.getline(current_line_number+1))
+	vim.hl.range(buf, scroll_namespace_id, "Visual", {current_line_number-2, 0}, {current_line_number, next_line_length})
+
+	vim.defer_fn(function() 
+		vim.api.nvim_buf_clear_namespace(buf, scroll_namespace_id, 0, -1)
+	end, 800)
+end
+
+vim.keymap.set('n', '<C-u>', function()
+	highlight_around_current_line_a_bit()
+	half_window_up = vim.api.nvim_replace_termcodes("<C-d>", true, false, true)
+	vim.api.nvim_feedkeys(half_window_up, 'n', false)
+end)
+
+vim.keymap.set('n', '<C-i>', function()
+	highlight_around_current_line_a_bit()
+	half_window_up = vim.api.nvim_replace_termcodes("<C-u>", true, false, true)
+	vim.api.nvim_feedkeys(half_window_up, 'n', false)
+end)
+
+show_top_start = false
+vim.keymap.set('n', '<a-g>', function() 
+	show_top_start = not show_top_start
+	if show_top_start then
+		vim.cmd("normal! mtgg")
+	else 
+		vim.cmd("normal! `t")
+	end
+end)
+
+scrolling_started = false
+scrolling_active = false;
+previous_scroll = 0; -- The scroll position (in terms of line number at top of screen, not cursor...)
+
+function move_cursor_to_screen_center()
+  local topline = vim.fn.line("w0")
+  local botline = vim.fn.line("w$")
+
+  local center_line = math.floor((topline + botline) / 2)
+  local col = vim.fn.col(".")
+  vim.api.nvim_win_set_cursor(0, { center_line, col - 1 })
+end
+
+vim.keymap.set('n', '<a-e>', function() 
+	if not scrolling_started then
+		vim.cmd("normal! ms")
+		previous_scroll = vim.fn.getpos("w0")[2]
+		scrolling_started = true
+	end
+
+	scroll_up = vim.api.nvim_replace_termcodes("5<C-e>", true, false, true)
+	vim.api.nvim_feedkeys(scroll_up, 'n', false)
+	scrolling_active = true
+	vim.defer_fn(function() scrolling_active = false end, 20)
+end)
+vim.keymap.set('n', '<a-y>', function()
+	if not scrolling_started then
+		vim.cmd("normal! ms")
+		previous_scroll = vim.fn.getpos("w0")[2]
+		scrolling_started = true
+	end
+
+	scroll_up = vim.api.nvim_replace_termcodes("5<C-y>", true, false, true)
+	vim.api.nvim_feedkeys(scroll_up, 'n', false)
+	scrolling_active = true
+	vim.defer_fn(function() scrolling_active = false end, 20)
+end)
+vim.keymap.set('n', '<Space>', function() 
+	if scrolling_started then
+		scrolling_started = false
+		move_cursor_to_screen_center()
+	else
+		local create_split = vim.api.nvim_replace_termcodes("moi<CR><Esc>`o", true, false, true)
+		vim.api.nvim_feedkeys(create_split, 'n', false)
+	end
+end)
+
+vim.api.nvim_create_autocmd("CursorMoved", {callback = function() 
+	if not scrolling_active and scrolling_started then
+		scrolling_started = false
+		-- so, we're trying to both set the cursor and the screen/scrolling, but nvim doesn't let us set scroll directly
+		-- so we have to set cursor, then use scroll to top command, then set cursor again
+		vim.api.nvim_win_set_cursor(0, {previous_scroll, 0})
+		vim.cmd("normal! zt")
+		vim.cmd("normal! `s")
+	end
+end})
+vim.api.nvim_create_autocmd("CursorMovedI", {callback = function() 
+	if not scrolling_active and scrolling_started then
+		scrolling_started = false
+		vim.api.nvim_win_set_cursor(0, {previous_scroll, 0})
+		vim.cmd("normal! zt")
+		vim.cmd("normal! `s zz")
+	end
+end})
+
+-- Move lines up/down
+vim.keymap.set('n', '<S-j>', ':m .+1<CR>==')
+vim.keymap.set('n', '<S-k>', ':m .-2<CR>==')
+vim.keymap.set('v', '<S-j>', ":m '>+1<CR>gv=gv")
+vim.keymap.set('v', '<S-k>', ":m '<-2<CR>gv=gv")
+
+----------------------------------------------------------------------------------------------------------------------------------------
+-- COMPILATION
+----------------------------------------------------------------------------------------------------------------------------------------
 vim.keymap.set('n', '<C-c>', function() 
 	vim.cmd("w")
 	local command = ""
@@ -101,7 +234,7 @@ vim.keymap.set('n', '<C-c>', function()
 	if filetype == 'typst' then
 		command = "typst compile --diagnostic-format=short " .. vim.api.nvim_buf_get_name(0)
 	else
-		command = "make"	
+		command = "make " .. vim.g.my_make_cmd
 	end
 	command = command .. " 2> compile_errors.txt"
 	vim.fn.jobstart(command, {
@@ -116,11 +249,14 @@ vim.keymap.set('n', '<C-c>', function()
 	})
 end);
 
--- Move lines up/down
-vim.keymap.set('n', '<S-j>', ':m .+1<CR>==')
-vim.keymap.set('n', '<S-k>', ':m .-2<CR>==')
-vim.keymap.set('v', '<S-j>', ":m '>+1<CR>gv=gv")
-vim.keymap.set('v', '<S-k>', ":m '<-2<CR>gv=gv")
+vim.g.my_make_cmd = ""
+vim.api.nvim_create_user_command('SetMakeCmd', function(opts)
+	if opts.args == " " then
+		vim.g.my_make_cmd = '';
+	else
+		vim.g.my_make_cmd = opts.args
+	end
+end, { nargs = 1 })
 
 ---------------------------------------------------------------------------------------------------------------------------------
 -- CUSTOM OPERATORS! (HACKY AND WONKY)
@@ -268,19 +404,6 @@ require('lazy').setup({
 	 { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 	'ziontee113/color-picker.nvim',
 
-	{ -- Adds git related signs to the gutter, as well as utilities for managing changes
-		'lewis6991/gitsigns.nvim',
-		opts = {
-			signs = {
-				add = { text = '+' },
-				change = { text = '~' },
-				delete = { text = '_' },
-				topdelete = { text = '‾' },
-				changedelete = { text = '~' },
-			},
-		},
-	},
-
 	-- Colors and basic syntax highlighting!
 { -- You can easily change to a different colorscheme.
 	  -- Change the name of the colorscheme plugin below, and then
@@ -305,7 +428,12 @@ require('lazy').setup({
 	},
 
 	-- Transparent background
-	'xiyaowong/transparent.nvim',
+	{
+		'xiyaowong/transparent.nvim',
+		config = function() 
+			vim.cmd("TransparentEnable")
+		end
+	},
 
 	-- More/better syntax highlighting with treesitter!
 	{
@@ -313,7 +441,7 @@ require('lazy').setup({
 		 build = ':TSUpdate',
 		 config = function()
 			require('nvim-treesitter.configs').setup {
-			  ensure_installed = { "c", "lua", "python", "javascript", "typst" }, -- add what you use
+			  ensure_installed = { "c", "lua", "python", "javascript", "typst", "zig" }, -- add what you use
 			  ignore_install = {'org'},
 			  highlight = {
 				 enable = true, -- enable Treesitter highlighting
@@ -409,53 +537,64 @@ require('lazy').setup({
 		  end,
 	},
 	{
-		  '3rd/image.nvim',
-		  build = false,
-		  opts = {
-					 processor = "magick_cli",
-		  },
-		  config = function()
-					 require("image").setup({
-								  backend = "kitty",
-								  processor = "magick_cli", -- or "magick_rock"
-								  integrations = {
-									 markdown = {
-										enabled = true,
-										clear_in_insert_mode = false,
-										download_remote_images = true,
-										only_render_image_at_cursor = false,
-										only_render_image_at_cursor_mode = "popup",
-										floating_windows = false, -- if true, images will be rendered in floating markdown windows
-										filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
-									 },
-									 neorg = {
-										enabled = true,
-										filetypes = { "norg" },
-									 },
-									 typst = {
-										enabled = true,
-										filetypes = { "typst" },
-									 },
-									 html = {
-										enabled = false,
-									 },
-									 css = {
-										enabled = false,
-									 },
-								  },
-								  max_width = nil,
-								  max_height = nil,
-								  max_width_window_percentage = nil,
-								  max_height_window_percentage = 50,
-								  window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
-								  window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
-								  editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
-								  tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
-								  hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
-					 })
-		  end
-	},
-})
+		'derektata/lorem.nvim',
+		config = function()
+			require("lorem").opts {
+				sentence_length = "mixed", -- using a default configuration
+				comma_chance = 0.3, -- 30% chance to insert a comma
+				max_commas = 2, -- maximum 2 commas per sentence
+				debounce_ms = 200, -- default debounce time in milliseconds
+			}
+		end
+	}})
+-- 	{
+-- 		  '3rd/image.nvim',
+-- 		  build = false,
+-- 		  opts = {
+-- 					 processor = "magick_cli",
+-- 		  },
+-- 		  config = function()
+-- 					 require("image").setup({
+-- 								  backend = "kitty",
+-- 								  processor = "magick_cli", -- or "magick_rock"
+-- 								  integrations = {
+-- 									 markdown = {
+-- 										enabled = true,
+-- 										clear_in_insert_mode = false,
+-- 										download_remote_images = true,
+-- 										only_render_image_at_cursor = false,
+-- 										only_render_image_at_cursor_mode = "popup",
+-- 										floating_windows = false, -- if true, images will be rendered in floating markdown windows
+-- 										filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
+-- 									 },
+-- 									 neorg = {
+-- 										enabled = true,
+-- 										filetypes = { "norg" },
+-- 									 },
+-- 									 typst = {
+-- 										enabled = true,
+-- 										filetypes = { "typst" },
+-- 									 },
+-- 									 html = {
+-- 										enabled = false,
+-- 									 },
+-- 									 css = {
+-- 										enabled = false,
+-- 									 },
+-- 								  },
+-- 								  max_width = nil,
+-- 								  max_height = nil,
+-- 								  max_width_window_percentage = nil,
+-- 								  max_height_window_percentage = 50,
+-- 								  window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
+-- 								  window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
+-- 								  editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
+-- 								  tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+-- 								  hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
+-- 					 })
+-- 		  end
+-- 	}
+-- })
 
 require('Comment').setup()
 require('color-picker').setup()

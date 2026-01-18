@@ -1,0 +1,214 @@
+(defcfg
+	process-unmapped-keys yes
+	concurrent-tap-hold true
+	linux-dev-names-include (
+		"Telink CIDOO ABM066 Keyboard"
+		"Telink CIDOO ABM066"
+	)
+)
+
+(defsrc
+;; one to one remappings
+/ 		 
+= 		 
+F13	 
+spc 	 
+
+;; layer keys
+ret
+d
+
+j
+k
+l
+p
+n
+m
+u
+h
+y
+f
+i
+o
+s
+lmet ;; meta key, aka no caps
+
+grv
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+,
+-
+)
+
+(deffakekeys
+  my-single-key d
+)
+
+;; NORMAL
+(deflayer normal
+S-/		;; / 		 
+S-=		;; = 		 
+=	 
+_                                                  	;; spc 	 
+(tap-hold 50 95 ret (layer-while-held navigation))		;; ret
+_ 		;; d
+(tap-hold 200 150 j (layer-while-held symbols_right))	;; j
+_		;; k
+_		;; l
+_		;; p
+_		;; n
+_		;; m
+_		;; u
+_		;; h
+_		;; y
+(tap-hold 200 150 f (layer-while-held symbols_left))		;; f
+_		;; i
+_		;; o
+_     ;; s
+(tap-hold 50 95 esc lmet)
+
+_		;; ^
+_		;; 0
+_		;; 1
+_		;; 2
+_		;; 3
+_		;; 4
+_		;; 5
+_		;; 6
+_		;; 7
+_		;; 8
+_		;; 9
+_
+_
+)
+
+(deflayer symbols_left
+= 		;; / 		 
+tab		;; = 		 
+S-8		;; F13	 
+_		;; spc 	 
+ 		;; 
+_		;; ret
+_		;; d
+ 		;; 
+_		;; j
+_		;; k
+_		;; l
+_		;; p
+_		;; n
+_		;; m
+_		;; u
+_		;; h
+_		;; y
+_		;; f
+_		;; i
+_		;; o
+_		;; s
+_		;; lmet ;; meta key, aka no caps
+ 		;; 
+_		;; ^
+S-]		;; 0
+_		;; 1
+_		;; 2
+_		;; 3
+_		;; 4
+_		;; 5
+_		;; 6
+S-[		;; 7
+S-9		;; 8
+S-0		;; 9
+'
+S-'
+)
+
+(deflayer symbols_right
+_ 		;; / 		 
+_		;; = 		 
+_		;; F13	 
+_		;; spc 	 
+ 		;; 
+_		;; ret
+_		;; d
+ 		;; 
+_		;; j
+_		;; k
+_		;; l
+_		;; p
+_		;; n
+_		;; m
+_		;; u
+_		;; h
+_		;; y
+_		;; f
+_		;; i
+_		;; o
+_		;; s
+_		;; lmet ;; meta key, aka no caps
+ 		;; 
+_		;; ^
+_		;; 0
+S-5		;; 1
+S-2		;; 2
+[		;; 3
+]		;; 4
+S-7		;; 5
+S-\		;; 6
+_		;; 7
+_		;; 8
+_		;; 9
+_
+_
+)
+
+
+(deflayer navigation
+_			;; / 		 
+_			;; = 		 
+_			;; F13	 
+_			;; spc 	 
+_			;; ret
+home			;; d
+down			;; j
+up			;; k
+right			;; l
+_			;; p
+_			;; n
+_			;; m
+pgup			;; u
+left			;; h
+pgdn			;; y
+end			;; f
+_			;; i
+_			;; o
+_			;; s
+_
+
+_
+_
+_
+_
+_
+_
+_
+_
+_
+_
+_
+_
+_
+)
+
+(defchordsv2
+( j i ) / 50 first-release (navigation symbols_left symbols_right)
+( e f ) \ 50 first-release (navigation symbols_left symbols_right)
+( k n ) S-. 50 first-release (navigation symbols_left symbols_right)
+( d v ) S-, 50 first-release (navigation symbols_left symbols_right)
+)

@@ -145,3 +145,10 @@ tooltip {
 	margin-right:0.4rem;
 }
 
+#network{
+  border-radius: 0px;
+  background-color: #1e1e2e;
+  color: #cdd6f4;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+}
