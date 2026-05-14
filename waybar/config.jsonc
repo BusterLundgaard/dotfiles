@@ -133,6 +133,7 @@
 
 	"clock",
 	"network",
+	"tray",
 	"custom/power"
 ],
 "modules-center": [],
@@ -146,22 +147,22 @@
 	"format": "{id}",
 	"all-outputs": true,
 	"disable-scroll": false,
-	"active-only": false,
+	"active-only": false
 },
 "hyprland/window": {
-	"format": "{title}",
+	"format": "{title}"
 },
-
 "cpu": {
 	"format": " {usage}%",
 	"tooltip": true,
-	"interval": 1,
+	"interval": 1
 },
 "memory": {
-	"format": " {used:0.1f}Gi",
+	"format": " {used:0.1f}Gi"
 },
 "battery": {
 	"format": " {capacity}%",
+	"format-charging": "⚡ {capacity}%",
 	"states": {
 		"megacritical":5,
 		"critical": 10,
@@ -177,7 +178,6 @@
 	},
 	 "format-icons": ["", "", "", "", ""]
 },
-
 "pulseaudio": {
 	"format": "{icon} {volume}%",
 	"format-muted": "  muted",
@@ -187,7 +187,6 @@
 	},
 	"on-click": "pavucontrol",
 },
-
  "clock": {
 		 "format": " {:L%a %d %b %H:%M}",
 		 "format-alt": "{:%A, %B %d, %Y (%R)}",
@@ -242,6 +241,9 @@
 	 "tooltip-format-ethernet": "{ifname} ",
 	 "tooltip-format-disconnected": "Disconnected",
 	 "max-length": 50
+},
+"tray": {
+	"spacing": 10
 },
 
 // =============================================================================================================

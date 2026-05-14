@@ -8,10 +8,6 @@
 alias lss='eza -l --sort=size -r --all --no-permissions --no-user --no-time --icons=always --only-files && eza -l --sort=size -r --all --no-permissions --no-user --no-time --icons=always --only-dirs --total-size'
 alias l='eza -l --sort=size -r --all --no-permissions --no-user --no-time --icons=always --only-dirs && eza -l --sort=size -r --all --no-permissions --no-user --no-time --icons=always --only-files'
 alias grep='grep --color=auto'
-function rm() {
-	rip "$@"
-	l
-}
 function mv() {
 	/usr/bin/mv "$@"
 	l
@@ -19,6 +15,9 @@ function mv() {
 function cp() {
 	/usr/bin/cp "$@"
 	l
+}
+function rm() {
+	/usr/bin/rm-improved "$@"
 }
 # Function for moving large files
 function cpl() {
@@ -55,13 +54,18 @@ alias hist='history -c && history -r && history | bat --language=sh -pp'
 # Clone current terminal quickly
 alias clone='kitty --detach .'
 
+# Supress banner in GDB
+alias gdb='gdb -q'
+
+alias rm='rip'
 # yazi:
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
 	IFS= read -r -d '' cwd < "$tmp"
 	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
-	rm -f -- "$tmp"
+	rm "$tmp"
+	l
 }
 #
 cd() {
@@ -110,9 +114,13 @@ export CONFIG='/home/buster/.config'
 # add to PATH:
 export PATH="/home/buster/.cargo/bin:$PATH"
 export SVN_EDITOR="nvim"
-
+export GRAVEYARD="$HOME/trash"
 
 PATH="/home/buster/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PATH="/home/buster/src/emsdk${PATH:+:${PATH}}"; export PATH;
+
+EMSDK_QUIET=1 source ~/src/emsdk/emsdk_env.sh
+
 PERL5LIB="/home/buster/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
 PERL_LOCAL_LIB_ROOT="/home/buster/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
 PERL_MB_OPT="--install_base \"/home/buster/perl5\""; export PERL_MB_OPT;
