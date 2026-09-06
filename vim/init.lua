@@ -1,7 +1,9 @@
 -- ESSENTIAL OPTIONS
 ----------------------------------------------------------------------------------------------------------------------------------
 -- vim.g.mapleader = ' '
--- vim.g.maplocalleader = ' '
+-- vim.g.maploclleader = ' '
+
+vim.g.maplocalleader = '~'
 
 vim.o.number = true
 vim.o.relativenumber = true
@@ -13,6 +15,7 @@ vim.o.showbreak = '↪'
 vim.o.tabstop = 3
 vim.o.shiftwidth = 3
 vim.opt.expandtab = false
+vim.opt.cinoptions:append("l1")
 
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '.', nbsp = '␣' }
@@ -107,9 +110,20 @@ vim.keymap.set('n', '<a-l>', '<cmd>vertical res +5<CR>', {desc = "Resize window 
 vim.keymap.set('n', '<a-h>', '<cmd>vertical res -5<CR>', {desc = "Resize window left"})
 vim.keymap.set('n', '<a-j>', '<cmd>horizontal res +5<CR>', {desc = "Resize window left"})
 vim.keymap.set('n', '<a-k>', '<cmd>horizontal res -5<CR>', {desc = "Resize window left"})
-vim.keymap.set('n', '<a-Right>', '<cmd>bnext<CR>')
-vim.keymap.set('n', '<a-Left>', '<cmd>bprev<CR>')
+vim.keymap.set('n', '<a-Right>', function()
+	local keys = vim.api.nvim_replace_termcodes('<C-i>', true, false, true)
+	vim.api.nvim_feedkeys(keys, 'n', false)
+end)
+vim.keymap.set('n', '<a-Left>', function() vim.cmd([[execute "normal! \<C-o>"]]) end)
 vim.keymap.set('n', '<a-Up>', '<C-W>}')
+vim.keymap.set('n', '<S-a-1>', '<cmd>tabnext 1<CR>')
+vim.keymap.set('n', '<S-a-2>', '<cmd>tabnext 2<CR>')
+vim.keymap.set('n', '<S-a-3>', '<cmd>tabnext 3<CR>')
+vim.keymap.set('n', '<S-a-4>', '<cmd>tabnext 4<CR>')
+vim.keymap.set('n', '<S-a-5>', '<cmd>tabnext 5<CR>')
+vim.keymap.set('n', '<S-a-6>', '<cmd>tabnext 6<CR>')
+vim.keymap.set('n', '<a-+>', '<cmd>tabnew<CR>')
+vim.keymap.set('n', '<a-->', '<cmd>tabclose<CR>')
 
 show_top_start = false
 local saved_view = nil
@@ -163,6 +177,10 @@ vim.keymap.set('n', '<C-c>', function()
 	})
 end);
 
+vim.api.nvim_create_user_command('FindAndReplace', function() 
+	require('grug-far').open({ prefills = { filesFilter = "*.{cpp,h}" }})
+end, {desc = "Just alias for GrugFar"})
+
 
 -- ZEN MODE
 ---------------------------------------------------------------------------------------------------------------------------------
@@ -202,6 +220,99 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 	callback = function() vim.hl.on_yank() end
 })
 
+
+-- CALCULATOR
+---------------------------------------------------------------------------------------------------------------------------------
+local function eval_math_lines()
+  -- Use '[  and '] which are set reliably after leaving visual mode,
+  -- and always sort so direction of selection doesn't matter
+  local start_line = vim.fn.line("'<")
+  local end_line   = vim.fn.line("'>")
+
+  -- Sort so upward selections work too
+  if start_line > end_line then
+    start_line, end_line = end_line, start_line
+  end
+
+  local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+
+  for i, line in ipairs(lines) do
+    if line:match("%S") then
+      local fn, err = load("return " .. line)
+      if fn then
+        local ok, result = pcall(fn)
+        if ok and result ~= nil then
+          local trimmed = line:gsub("%s+$", "")
+          lines[i] = trimmed .. " = " .. tostring(result)
+        end
+      end
+    end
+  end
+
+  vim.api.nvim_buf_set_lines(0, start_line - 1, end_line, false, lines)
+end
+
+local function make_env()
+  -- Start with access to all globals, then overlay math functions
+  local env = setmetatable({}, { __index = _G })
+  for k, v in pairs(math) do
+    env[k] = v
+  end
+  return env
+end
+
+vim.keymap.set("v", "<C-c>", function()
+  -- Store the marks before escaping, since feedkeys is async
+  local start_line = vim.fn.line("v")
+  local end_line   = vim.fn.line(".")
+
+  if start_line > end_line then
+    start_line, end_line = end_line, start_line
+  end
+
+  -- Escape visual mode synchronously
+  vim.api.nvim_feedkeys(
+    vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
+    "x", false
+  )
+
+  local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+  local env = make_env()
+
+  -- First pass: evaluate and collect trimmed lines + results
+  local trimmed_lines = {}
+  local results = {}
+  local max_len = 0
+
+  for i, line in ipairs(lines) do
+    if line:match("%S") then
+      local trimmed = line:gsub("%s+$", "")
+      local fn, err = load("return " .. trimmed)
+      if fn then
+        debug.setupvalue(fn, 1, env)
+        local ok, result = pcall(fn)
+        if ok and result ~= nil then
+          trimmed_lines[i] = trimmed
+          results[i] = tostring(result)
+          if #trimmed > max_len then
+            max_len = #trimmed
+          end
+        end
+      end
+    end
+  end
+
+  -- Second pass: pad each line to align the "="
+  for i, line in ipairs(lines) do
+    if trimmed_lines[i] then
+      local padding = string.rep(" ", max_len - #trimmed_lines[i])
+      lines[i] = trimmed_lines[i] .. padding .. " = " .. results[i]
+    end
+  end
+
+  vim.api.nvim_buf_set_lines(0, start_line - 1, end_line, false, lines)
+end, { desc = "Evaluate math expression on each selected line" })
+
 -- PLUGINS
 ---------------------------------------------------------------------------------------------------------------------------------
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -216,9 +327,22 @@ end
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
+a = 1
+bc = 2
+dce = 3
+
 require('lazy').setup({
 	-- Adds support for comments plus loads of nice little motions
-	"echasnovski/mini.nvim",
+	{
+		"echasnovski/mini.nvim",
+		 mappings = {
+			 start = 'ga',
+			 start_with_preview = 'gA',
+		 },
+		 config = function()
+			 require('mini.align').setup()
+		 end
+	},
 
 	-- Zen mode
 	{
@@ -226,11 +350,11 @@ require('lazy').setup({
 	opts = {
 		window = {
 			width = 80
+			}
 		}
-	}
+	},
 
 	-- File explorer
-	},
 	'justinmk/vim-dirvish',
 
 	-- Syntax highlighting with treesitter
@@ -295,8 +419,13 @@ require('lazy').setup({
 
 			-- See `:help telescope.builtin`
 			local builtin = require 'telescope.builtin'
-			vim.keymap.set('n', '<C-æ>', builtin.find_files,    { desc = '[S]earch [F]iles' })
+			vim.keymap.set('n', '<C-æ>', function()
+			  builtin.find_files({
+				 find_command = { "rg", "--files", "--glob", "*.{c,cpp,h}" },
+			  })
+			end, { desc = '[S]earch [F]iles' })
 			vim.keymap.set('n', '<C-g>', builtin.live_grep,     { desc = '[S]earch by [G]rep' })
+			vim.keymap.set('n', '<C-t>', builtin.tags, { desc = '[Search] in tags file' })
 			vim.keymap.set('n', '<C-S-g>', function()
 				 local word = vim.fn.expand('<cword>')
 				 local results = vim.fn.systemlist('rg --vimgrep ' .. vim.fn.shellescape(word))
@@ -328,8 +457,26 @@ require('lazy').setup({
 			vim.keymap.set("n", "<a-2>", function() harpoon:list():select(2) end)
 			vim.keymap.set("n", "<a-3>", function() harpoon:list():select(3) end)
 			vim.keymap.set("n", "<a-4>", function() harpoon:list():select(4) end)
+			vim.keymap.set("n", "<a-5>", function() harpoon:list():select(5) end)
+			vim.keymap.set("n", "<a-6>", function() harpoon:list():select(6) end)
+			vim.keymap.set("n", "<a-7>", function() harpoon:list():select(7) end)
+			vim.keymap.set("n", "<a-8>", function() harpoon:list():select(8) end)
+			vim.keymap.set("n", "<a-9>", function() harpoon:list():select(9) end)
 		end
 	},
+	{
+    'MagicDuck/grug-far.nvim',
+    -- Note (lazy loading): grug-far.lua defers all it's requires so it's lazy by default
+    -- additional lazy config to defer loading is not really needed...
+    config = function()
+      -- optional setup call to override plugin options
+      -- alternatively you can set options with vim.g.grug_far = { ... }
+      require('grug-far').setup({
+        -- options, see Configuration section below
+        -- there are no required options atm
+      });
+    end
+  },
 })
 
 ---------------------------------------------------------------------------------------------------------------------------------

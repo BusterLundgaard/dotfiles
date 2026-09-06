@@ -1,6 +1,6 @@
 local terminal = "kitty"
 local menu = "wofi --show drun"
-local mainMod = "SUPER" -- Sets "Windows" key as main modifier
+local mainMod = "SUPER"
 
 -- INIT
 hl.on("hyprland.start", function()
@@ -22,7 +22,6 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("nm-applet --indicator")
 end)
 
-
 -- MONITORS
 hl.monitor({
 	output = "eDP-1",
@@ -30,13 +29,24 @@ hl.monitor({
 	position = "0x0",
 	scale = "1"
 })
+-- hl.monitor({
+-- 	output = "eDP-1",
+-- 	mode = "1920x1200@120.00Hz",
+-- 	position = "0x0",
+-- 	scale = "1"
+-- })
+-- hl.monitor({
+-- 	output = "HDMI-A-1",
+-- 	mode = "2560x1440@59.95Hz",
+-- 	position = "0x-1440",
+-- 	scale = "1",
+-- })
 hl.monitor({
 	output = "HDMI-A-1",
-	mode = "2560x1440@59.95Hz",
+	mode = "1920x1080@50.00Hz",
 	position = "0x-1440",
 	scale = "1",
 })
-
 
 -- AESTHETICS / THEME
 hl.config({
@@ -45,8 +55,8 @@ hl.config({
 		gaps_out = 0,
 
 		border_size = 0,
-		col.active_border = "rgba(255,255,255,0.5)",
-		col.inactive_border = "rgba(86,15,100,0.25)",
+		-- col.active_border = "rgba(255,255,255,0.5)",
+		-- col.inactive_border = "rgba(86,15,100,0.25)",
 
 		-- https://wiki.hypr.land/Configuring/Variables/#variable-types for info about colors
 		-- col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
@@ -76,11 +86,25 @@ hl.config({
         vibrancy = 0.1696
 		},
 		animations = {
-			enabled = true
+			-- enabled = true
 		}
+	},
+	dwindle = {
+		preserve_split = true
 	}
 })
 
+hl.curve("easeOutQuint",   { type = "bezier", points = { {0.23, 1},    {0.32, 1}    } })
+hl.curve("easeInOutCubic", { type = "bezier", points = { {0.65, 0.05}, {0.36, 1}    } })
+hl.curve("linear",         { type = "bezier", points = { {0, 0},       {1, 1}       } })
+hl.curve("almostLinear",   { type = "bezier", points = { {0.5, 0.5},   {0.75, 1}    } })
+hl.curve("quick",          { type = "bezier", points = { {0.15, 0},    {0.1, 1}     } })
+
+hl.animation({ leaf = "global", enabled = true, speed = 9, bezier = "quick" })
+hl.animation({ leaf = "windows", enabled = true, style = "slide", speed = 5.0, bezier = "quick" })
+hl.animation({ leaf = "layers", enabled = true, style = "fade", speed = 1.0, bezier = "almostLinear" })
+hl.animation({ leaf = "workspaces", enabled = true, style = "slide", speed = 4.0, bezier = "easeInOutCubic" })
+hl.animation({ leaf = "fade", enabled = true, speed = 3.0, bezier = "almostLinear" })
 
 -- INPUT AND DEVICES
 hl.config({
@@ -124,6 +148,7 @@ hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. " + M", hl.dsp.layout("togglesplit"))
+hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("/usr/bin/drag_pasted_image"))
 hl.bind(mainMod .. " + right", hl.dsp.window.move({ workspace = "r+1" }))
 hl.bind(mainMod .. " + left",  hl.dsp.window.move({ workspace = "r-1" }))
 
@@ -137,10 +162,10 @@ hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.swap({ direction = "d" }))
 hl.bind(mainMod .. " + SHIFT + K", hl.dsp.window.swap({ direction = "u" }))
 hl.bind(mainMod .. " + SHIFT + L", hl.dsp.window.swap({ direction = "r" }))
 
-hl.bind(mainMod .. "CTRL + H", hl.dsp.resize({ x = -100, y = 0,    relative = true }))
-hl.bind(mainMod .. "CTRL + L", hl.dsp.resize({ x =  100, y = 0,    relative = true }))
-hl.bind(mainMod .. "CTRL + J", hl.dsp.resize({ x = 0,    y =  100, relative = true }))
-hl.bind(mainMod .. "CTRL + K", hl.dsp.resize({ x = 0,    y = -100, relative = true }))
+hl.bind(mainMod .. " + CTRL + H", hl.dsp.window.resize({ x =  -100, y = 0,    relative = true }))
+hl.bind(mainMod .. " + CTRL + L", hl.dsp.window.resize({ x =  100, y = 0,    relative = true }))
+hl.bind(mainMod .. " + CTRL + J", hl.dsp.window.resize({ x = 0,    y =  100, relative = true }))
+hl.bind(mainMod .. " + CTRL + K", hl.dsp.window.resize({ x = 0,    y = -100, relative = true }))
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
@@ -153,15 +178,15 @@ hl.bind(mainMod .. " + 6", hl.dsp.focus({workspace = 6}))
 hl.bind(mainMod .. " + 7", hl.dsp.focus({workspace = 7}))
 hl.bind(mainMod .. " + 8", hl.dsp.focus({workspace = 8}))
 hl.bind(mainMod .. " + 9", hl.dsp.focus({workspace = 9}))
-hl.bind(mainMod .. " + SHIFT + 1" .. key, hl.dsp.window.move({ workspace = 1 }))
-hl.bind(mainMod .. " + SHIFT + 2" .. key, hl.dsp.window.move({ workspace = 1 }))
-hl.bind(mainMod .. " + SHIFT + 3" .. key, hl.dsp.window.move({ workspace = 1 }))
-hl.bind(mainMod .. " + SHIFT + 4" .. key, hl.dsp.window.move({ workspace = 1 }))
-hl.bind(mainMod .. " + SHIFT + 5" .. key, hl.dsp.window.move({ workspace = 1 }))
-hl.bind(mainMod .. " + SHIFT + 6" .. key, hl.dsp.window.move({ workspace = 1 }))
-hl.bind(mainMod .. " + SHIFT + 7" .. key, hl.dsp.window.move({ workspace = 1 }))
-hl.bind(mainMod .. " + SHIFT + 8" .. key, hl.dsp.window.move({ workspace = 1 }))
-hl.bind(mainMod .. " + SHIFT + 9" .. key, hl.dsp.window.move({ workspace = 1 }))
+hl.bind(mainMod .. " + SHIFT + 1", hl.dsp.window.move({ workspace = 1 }))
+hl.bind(mainMod .. " + SHIFT + 2", hl.dsp.window.move({ workspace = 2 }))
+hl.bind(mainMod .. " + SHIFT + 3", hl.dsp.window.move({ workspace = 3 }))
+hl.bind(mainMod .. " + SHIFT + 4", hl.dsp.window.move({ workspace = 4 }))
+hl.bind(mainMod .. " + SHIFT + 5", hl.dsp.window.move({ workspace = 5 }))
+hl.bind(mainMod .. " + SHIFT + 6", hl.dsp.window.move({ workspace = 6 }))
+hl.bind(mainMod .. " + SHIFT + 7", hl.dsp.window.move({ workspace = 7 }))
+hl.bind(mainMod .. " + SHIFT + 8", hl.dsp.window.move({ workspace = 8 }))
+hl.bind(mainMod .. " + SHIFT + 9", hl.dsp.window.move({ workspace = 9 }))
 
 -- Screenshots
 hl.bind("Print",                        hl.dsp.exec_cmd("hyprshot -m region -o /home/buster/Images/screencaps"))
@@ -170,7 +195,7 @@ hl.bind(mainMod .. " + SHIFT + Print",  hl.dsp.exec_cmd("hyprshot -m output -m e
 
 -- Special applications
 hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd(
-    "rofi -show calc -modi calc -no-show-match -no-sort -calc-command \"echo -n '{result}' | wl-copy\""
+    "rofi -show calc -modi calc -no-show-match -no-sort -calc-command \"wl-copy '{result}'\""
 ))
 hl.bind(mainMod .. " + ALT + C", hl.dsp.exec_cmd(
     "cliphist list | rofi -dmenu -display-columns 2 | cliphist decode | wl-copy"
@@ -181,8 +206,7 @@ hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(
 
 
 -- WINDOW RULES
-hl.workspace_rule({ workspace = "1", monitor = "HDMI-A-1", default = true })
-hl.workspace_rule({ workspace = "1", monitor = "DP-2" })
+hl.workspace_rule({ workspace = "1", monitor = "HDMI-A-1"})
 hl.workspace_rule({ workspace = "2", monitor = "eDP-1" })
 hl.workspace_rule({ workspace = "3", monitor = "eDP-1" })
 hl.workspace_rule({ workspace = "4", monitor = "eDP-1" })
@@ -199,17 +223,17 @@ hl.window_rule({
 	},
 	size = "1000 720",
 	move = "1500 0",
-	workspace = "1"
+	workspace = "2"
 })
 
 -- MISC 
 hl.config({
-misc = {
-			force_default_wallpaper = -1,    -- Set to 0 or 1 to disable the anime mascot wallpapers
-			disable_hyprland_logo   = false, -- If true disables the random hyprland logo / anime girl background. :(
-			enable_anr_dialog = false,
-			anr_missed_pings = 10
-    },
+	misc = {
+		force_default_wallpaper = -1,    -- Set to 0 or 1 to disable the anime mascot wallpapers
+		disable_hyprland_logo   = false, -- If true disables the random hyprland logo / anime girl background. :(
+		enable_anr_dialog = false,
+		anr_missed_pings = 10
+	},
 })
 
 -- Quack device keys (keycodes 192 / 193 / 194)
